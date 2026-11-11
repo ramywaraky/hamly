@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>حملي</title>
+<meta name="theme-color" content="#C2496E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="حملي">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+/* Layout: one-column phone app, home card on top, bottom tab bar. Soft rose + sage on warm white. */
+:root{
+  --bg:#FBF6F7; --surface:#FFFFFF; --ink:#2A2230; --muted:#7A6E78; --line:#EEE3E7;
+  --rose:#C2496E; --rose-soft:#F8E3EA; --sage:#4F8C7E; --sage-soft:#E3F0EC; --warn:#B7791F;
+  --display:"Alexandria","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --body:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#18141A; --surface:#231D25; --ink:#F2EAF0; --muted:#A898A4; --line:#352C37;
+  --rose:#EC7C9E; --rose-soft:#3A2230; --sage:#7CC2B1; --sage-soft:#1F3330; --warn:#E3B05C;
+  color-scheme:dark;
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+body{padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.3}
+h1{font-size:1.5rem} h2{font-size:1.15rem} h3{font-size:1rem}
+p{margin:0}
+.muted{color:var(--muted);font-size:.9rem}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+button,.btn{font:inherit;border:0;border-radius:12px;padding:10px 16px;cursor:pointer;background:var(--rose);color:#fff;font-weight:600}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--rose);outline-offset:2px}
+.btn-ghost{background:var(--rose-soft);color:var(--rose)}
+.btn-sage{background:var(--sage-soft);color:var(--sage)}
+.btn-sm{padding:6px 12px;font-size:.85rem;border-radius:10px}
+.btn-danger{background:transparent;color:var(--muted);padding:6px 10px}
+.btn-danger.armed{background:#C0392B;color:#fff}
+label{display:flex;flex-direction:column;gap:4px;font-size:.9rem;color:var(--muted)}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+textarea{min-height:64px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:380px){.grid2{grid-template-columns:1fr}}
+
+/* Hero */
+.hero{background:linear-gradient(160deg,var(--rose-soft),var(--surface) 70%);border:1px solid var(--line);border-radius:24px;padding:20px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.ring{width:120px;height:120px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .num b{font-family:var(--display);font-size:2.4rem;line-height:1;color:var(--rose)}
+.ring .num span{font-size:.75rem;color:var(--muted)}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.78rem;font-weight:600;background:var(--sage-soft);color:var(--sage)}
+.chip.rose{background:var(--rose-soft);color:var(--rose)}
+.chip.warn{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}
+.stat b{display:block;font-family:var(--display);font-size:1.15rem;font-variant-numeric:tabular-nums}
+.stat span{font-size:.75rem;color:var(--muted)}
+.baby{display:flex;gap:14px;align-items:center}
+.baby .fruit{font-size:2.6rem;width:64px;height:64px;border-radius:18px;background:var(--rose-soft);display:flex;align-items:center;justify-content:center;flex:none}
+.weekbar{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.weekbar button{flex:none;background:var(--surface);color:var(--ink);border:1px solid var(--line);min-width:44px;padding:6px 0;font-variant-numeric:tabular-nums}
+.weekbar button.cur{background:var(--rose);color:#fff;border-color:var(--rose)}
+.weekbar button.sel{outline:2px solid var(--rose)}
+
+/* Lists */
+.item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item .body{flex:1;min-width:0}
+.dose{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:var(--bg);border:1px solid var(--line)}
+.dose .time{font-family:var(--display);font-variant-numeric:tabular-nums;min-width:56px;text-align:center;color:var(--rose)}
+.dose.done{opacity:.6}
+.dose.done .name{text-decoration:line-through}
+.check{width:34px;height:34px;border-radius:50%;border:2px solid var(--sage);background:transparent;padding:0;display:flex;align-items:center;justify-content:center;color:transparent;flex:none}
+.dose.done .check{background:var(--sage);color:#fff}
+.empty{text-align:center;color:var(--muted);padding:18px 8px;font-size:.92rem}
+.timeline .item .dot{width:12px;height:12px;border-radius:50%;background:var(--line);margin-top:7px;flex:none}
+.timeline .item.now .dot{background:var(--rose)}
+.timeline .item.past .dot{background:var(--sage)}
+.kickbtn{width:170px;height:170px;border-radius:50%;font-size:1.2rem;font-family:var(--display);margin:8px auto;display:block;box-shadow:0 10px 30px color-mix(in srgb,var(--rose) 35%,transparent)}
+.kickcount{font-family:var(--display);font-size:3rem;text-align:center;color:var(--rose);font-variant-numeric:tabular-nums;line-height:1}
+.banner{background:var(--sage-soft);color:var(--sage);border-radius:14px;padding:12px 14px;font-weight:500}
+.banner.rose{background:var(--rose-soft);color:var(--rose)}
+
+/* Tabs */
+nav.tabs{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);z-index:20}
+nav.tabs button{background:none;color:var(--muted);border-radius:0;padding:8px 0 10px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.72rem;font-weight:500}
+nav.tabs button svg{width:24px;height:24px}
+nav.tabs button[aria-current="page"]{color:var(--rose)}
+.view[hidden]{display:none!important}
+[hidden]{display:none!important}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:12px;font-size:.9rem;z-index:30;max-width:90vw;text-align:center}
+.subtabs{display:flex;gap:6px;overflow-x:auto}
+.subtabs button{flex:none;background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.subtabs button[aria-pressed="true"]{background:var(--rose);color:#fff;border-color:var(--rose)}
+.disclaimer{font-size:.78rem;color:var(--muted);text-align:center;margin-top:10px}
+@media (prefers-reduced-motion:no-preference){.ring circle.fg{transition:stroke-dashoffset .8s ease}}
+</style>
+</head>
+<body>
+
+<!-- ============ ONBOARDING ============ -->
+<main class="wrap view" id="v-setup" hidden>
+  <div class="stack" style="padding-top:20px">
+    <div style="text-align:center" class="stack">
+      <img src="icon.svg" alt="" width="72" height="72" style="margin:0 auto;border-radius:18px">
+      <h1>أهلاً بيكي في «حملي»</h1>
+      <p class="muted">هنحسب أسبوع الحمل وميعاد الولادة المتوقع، ونفكرك بالأدوية والمواعيد. من غير إعلانات، وكل البيانات بتفضل على موبايلك بس.</p>
+    </div>
+    <form class="card stack" id="setupForm">
+      <label>اسمك (اختياري)<input id="sName" type="text" placeholder="مثلاً: سارة"></label>
+      <label>هتحسبي على أساس إيه؟
+        <select id="sMode">
+          <option value="lmp">أول يوم في آخر دورة</option>
+          <option value="due">ميعاد الولادة اللي الدكتور قاله</option>
+        </select>
+      </label>
+      <label id="sDateLbl">التاريخ<input id="sDate" type="date" required></label>
+      <button type="submit">ابدأي المتابعة</button>
+    </form>
+  </div>
+</main>
+
+<!-- ============ HOME ============ -->
+<main class="wrap view" id="v-home" hidden>
+  <div class="stack">
+    <div class="row between">
+      <div>
+        <p class="muted" id="hello">صباح الخير</p>
+        <h1 id="homeTitle">الأسبوع ١٢</h1>
+      </div>
+      <span class="chip rose" id="trimChip">الثلث الأول</span>
+    </div>
+
+    <div id="weekBanner" class="banner rose" hidden></div>
+
+    <section class="hero">
+      <div class="ring" aria-hidden="true">
+        <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="10"/><circle class="fg" id="ringFg" cx="60" cy="60" r="52" fill="none" stroke="var(--rose)" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg>
+        <div class="num"><b id="ringWeek">12</b><span>أسبوع</span></div>
+      </div>
+      <div class="stack" style="gap:6px;min-width:0">
+        <p id="gaText" style="font-weight:600">١١ أسبوع و٣ أيام</p>
+        <p class="muted" id="dueText">ميعاد الولادة المتوقع: —</p>
+        <p class="muted" id="leftText">فاضل — يوم</p>
+      </div>
+    </section>
+
+    <div class="stats">
+      <div class="stat"><b id="stPct">0%</b><span>من الحمل</span></div>
+      <div class="stat"><b id="stDoses">0/0</b><span>جرعات النهارده</span></div>
+      <div class="stat"><b id="stAppt">—</b><span>الميعاد الجاي</span></div>
+    </div>
+
+    <section class="card stack">
+      <div class="row between"><h2>حجم البيبي</h2><span class="muted" id="babyWeekLbl"></span></div>
+      <div class="baby"><div class="fruit" id="fruit">🍋</div><div class="stack" style="gap:2px;min-width:0"><b id="fruitName">ليمونة</b><span class="muted" id="fruitMeasure"></span></div></div>
+      <p id="devText"></p>
+      <div class="banner"><b>نصيحة الأسبوع: </b><span id="tipText"></span></div>
+      <div class="weekbar" id="weekbar" aria-label="تصفحي الأسابيع"></div>
+    </section>
+
+    <section class="card stack">
+      <div class="row between"><h2>أدوية النهارده</h2><button class="btn-ghost btn-sm" data-go="meds">إدارة الأدوية</button></div>
+      <div class="stack" id="homeDoses"></div>
+    </section>
+    <p class="disclaimer">المعلومات هنا عامة ومش بديل عن كلام الدكتور المتابع.</p>
+  </div>
+</main>
+
+<!-- ============ MEDS ============ -->
+<main class="wrap view" id="v-meds" hidden>
+  <div class="stack">
+    <h1>الأدوية والفيتامينات</h1>
+    <section class="card stack">
+      <h2>أدوية النهارده</h2>
+      <div class="stack" id="todayDoses"></div>
+    </section>
+
+    <form class="card stack" id="medForm">
+      <h2 id="medFormTitle">إضافة دوا</h2>
+      <input type="hidden" id="mId">
+      <label>اسم الدوا<input id="mName" required placeholder="مثلاً: فوليك أسيد"></label>
+      <div class="grid2">
+        <label>الجرعة<input id="mDose" placeholder="قرص واحد"></label>
+        <label>مرات في اليوم
+          <select id="mTimesCount"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+        </label>
+      </div>
+      <div class="grid2" id="mTimes"></div>
+      <div class="grid2">
+        <label>من يوم<input id="mStart" type="date" required></label>
+        <label>لمدة (أيام) — فاضي = مستمر<input id="mDays" type="number" min="1" inputmode="numeric" placeholder="مستمر"></label>
+      </div>
+      <label>ملاحظات<input id="mNotes" placeholder="بعد الأكل، مع كوباية مية…"></label>
+      <div class="row">
+        <button type="submit" id="medSubmit">حفظ الدوا</button>
+        <button type="button" class="btn-ghost" id="medCancel" hidden>إلغاء</button>
+      </div>
+    </form>
+
+    <section class="card">
+      <div class="row between"><h2>كل الأدوية</h2><button class="btn-sage btn-sm" id="icsMeds">أضيفيهم للتقويم</button></div>
+      <div id="medList"></div>
+    </section>
+  </div>
+</main>
+
+<!-- ============ APPOINTMENTS ============ -->
+<main class="wrap view" id="v-appts" hidden>
+  <div class="stack">
+    <h1>المواعيد والتحاليل</h1>
+    <form class="card stack" id="apptForm">
+      <h2>ميعاد جديد</h2>
+      <label>الميعاد<input id="aTitle" required placeholder="متابعة عند الدكتور / سونار / تحليل"></label>
+      <div class="grid2">
+        <label>اليوم<input id="aDate" type="date" required></label>
+        <label>الساعة<input id="aTime" type="time" value="18:00" required></label>
+      </div>
+      <label>ملاحظات<input id="aNotes" placeholder="أسئلة عايزة أسألها للدكتور…"></label>
+      <button type="submit">حفظ الميعاد</button>
+    </form>
+    <section class="card">
+      <div class="row between"><h2>المواعيد الجاية</h2><button class="btn-sage btn-sm" id="icsAppts">أضيفيهم للتقويم</button></div>
+      <div id="apptList"></div>
+    </section>
+    <section class="card">
+      <h2>الفحوصات المعتادة في الحمل</h2>
+      <p class="muted">جدول استرشادي، والدكتور هو اللي بيحدد المواعيد الفعلية.</p>
+      <div class="timeline" id="testsList"></div>
+    </section>
+  </div>
+</main>
+
+<!-- ============ TOOLS ============ -->
+<main class="wrap view" id="v-tools" hidden>
+  <div class="stack">
+    <h1>أدوات</h1>
+    <div class="subtabs" role="group">
+      <button type="button" data-sub="kicks" aria-pressed="true">عدّاد الركلات</button>
+      <button type="button" data-sub="contr" aria-pressed="false">مؤقت الطلق</button>
+      <button type="button" data-sub="weight" aria-pressed="false">الوزن</button>
+      <button type="button" data-sub="water" aria-pressed="false">المية</button>
+      <button type="button" data-sub="bag" aria-pressed="false">شنطة الولادة</button>
+    </div>
+
+    <section class="card stack sub" id="sub-kicks">
+      <h2>عدّاد ركلات البيبي</h2>
+      <p class="muted">من الأسبوع ٢٨: اختاري وقت البيبي بيبقى نشيط فيه، واضغطي مع كل حركة. المعتاد ١٠ حركات في أقل من ساعتين. لو الحركة قلّت عن العادي كلمي الدكتور.</p>
+      <div class="kickcount" id="kickCount">0</div>
+      <p class="muted" style="text-align:center" id="kickTimer">اضغطي «ابدأي» عشان تبدئي العد</p>
+      <button class="kickbtn" id="kickBtn">ابدأي</button>
+      <div class="row" style="justify-content:center"><button class="btn-ghost btn-sm" id="kickEnd" hidden>إنهاء وحفظ</button></div>
+      <div id="kickList"></div>
+    </section>
+
+    <section class="card stack sub" id="sub-contr" hidden>
+      <h2>مؤقت الطلق (الانقباضات)</h2>
+      <p class="muted">اضغطي أول ما الطلقة تبدأ واضغطي تاني لما تخلص. القاعدة المشهورة ٥-١-١: طلقة كل ٥ دقايق، مدتها دقيقة، لمدة ساعة = كلمي الدكتور أو روحي المستشفى.</p>
+      <button class="kickbtn" id="contrBtn">بدأت الطلقة</button>
+      <div class="stats"><div class="stat"><b id="cAvgDur">—</b><span>متوسط المدة</span></div><div class="stat"><b id="cAvgGap">—</b><span>كل قد إيه</span></div><div class="stat"><b id="cCount">0</b><span>آخر ساعة</span></div></div>
+      <div id="contrList"></div>
+      <button class="btn-danger btn-sm" id="contrClear">مسح السجل</button>
+    </section>
+
+    <section class="card stack sub" id="sub-weight" hidden>
+      <h2>متابعة الوزن</h2>
+      <form class="row" id="wForm">
+        <input id="wKg" type="number" step="0.1" min="30" max="200" inputmode="decimal" placeholder="الوزن بالكيلو" required style="flex:1;min-width:120px">
+        <input id="wDate" type="date" required style="flex:1;min-width:140px">
+        <button type="submit">سجّلي</button>
+      </form>
+      <p id="wSummary" class="muted"></p>
+      <div id="wChart"></div>
+      <div id="wList"></div>
+    </section>
+
+    <section class="card stack sub" id="sub-water" hidden>
+      <h2>شرب المية النهارده</h2>
+      <p class="muted">الهدف المعتاد حوالي ٨-١٠ كوبايات في اليوم.</p>
+      <div class="kickcount" id="waterCount">0</div>
+      <p class="muted" style="text-align:center">كوبايات من ١٠</p>
+      <div class="row" style="justify-content:center"><button id="waterAdd">+ كوباية</button><button class="btn-ghost" id="waterSub">−</button></div>
+    </section>
+
+    <section class="card stack sub" id="sub-bag" hidden>
+      <h2>شنطة الولادة</h2>
+      <p class="muted">جهزيها حوالي الأسبوع ٣٤-٣٦.</p>
+      <div id="bagList"></div>
+    </section>
+  </div>
+</main>
+
+<!-- ============ SETTINGS ============ -->
+<main class="wrap view" id="v-settings" hidden>
+  <div class="stack">
+    <h1>الإشعارات والإعدادات</h1>
+    <section class="card stack">
+      <h2>الإشعارات</h2>
+      <p class="muted" id="notifState"></p>
+      <div class="row"><button id="notifBtn">تفعيل الإشعارات</button><button class="btn-ghost" id="notifTest">جربي إشعار</button></div>
+    </section>
+    <section class="card stack">
+      <h2>تذكيرات مضمونة حتى والموبايل مقفول</h2>
+      <p class="muted">المتصفح ممكن يوقف التطبيق وهو مقفول. عشان التذكير يوصلك أكيد، ضيفي التذكيرات لتقويم الموبايل (Google Calendar أو تقويم الآيفون) وهو اللي هيطلّع الإشعار في ميعاده.</p>
+      <button class="btn-sage" id="icsWeeks">رسالة كل أسبوع «انتي في الأسبوع الكام»</button>
+      <button class="btn-sage" id="icsMeds2">تذكير الأدوية في مواعيدها</button>
+      <button class="btn-sage" id="icsAppts2">المواعيد عند الدكتور</button>
+      <button class="btn-sage" id="icsAll">الكل في ملف واحد</button>
+    </section>
+    <form class="card stack" id="profileForm">
+      <h2>بيانات الحمل</h2>
+      <label>الاسم<input id="pName"></label>
+      <label>أول يوم في آخر دورة<input id="pLmp" type="date" required></label>
+      <p class="muted" id="pDue"></p>
+      <button type="submit">حفظ</button>
+    </form>
+    <section class="card stack">
+      <h2>نسخة احتياطية</h2>
+      <p class="muted">البيانات متخزنة على الموبايل ده بس. احفظي نسخة من وقت للتاني أو انقليها لموبايل تاني.</p>
+      <div class="row"><button class="btn-ghost" id="exportBtn">حفظ نسخة</button><label class="btn btn-ghost" style="flex-direction:row;color:var(--rose)">استرجاع نسخة<input type="file" id="importFile" accept="application/json" hidden></label></div>
+      <button class="btn-danger" id="resetBtn">مسح كل البيانات</button>
+    </section>
+  </div>
+</main>
+
+<nav class="tabs" id="tabs" hidden>
+  <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>الرئيسية</button>
+  <button data-go="meds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-45 12 12)"/><path d="M8.5 8.5l7 7"/></svg>الأدوية</button>
+  <button data-go="appts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>المواعيد</button>
+  <button data-go="tools"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.4-9.3-9A5.2 5.2 0 0 1 12 6.6 5.2 5.2 0 0 1 21.3 12C19 16.6 12 21 12 21z"/></svg>أدوات</button>
+  <button data-go="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>إشعارات</button>
+</nav>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+'use strict';
+/* ---------- Week data ---------- */
+const WEEKS = {
+ 1:['🌱','لسه في البداية','','الحمل بيتحسب من أول يوم في آخر دورة، فالأسابيع الأولى دي قبل التبويض فعلياً.','لو بتخططي للحمل، الفوليك أسيد مهم من دلوقتي بعد استشارة الدكتور.'],
+ 2:['🌱','لسه في البداية','','التبويض بيحصل غالباً آخر الأسبوع ده.','نامي كويس وقللي الكافيين.'],
+ 3:['🌱','خلية صغيرة جداً','','البويضة المخصبة بتنقسم وبتتحرك ناحية الرحم.','ابعدي عن التدخين والسجاير حواليكي.'],
+ 4:['⚫','بذرة خشخاش','حوالي ١ مم','الجنين بيزرع نفسه في جدار الرحم، وده ممكن يكون وقت اختبار الحمل الإيجابي.','احجزي أول زيارة للدكتور.'],
+ 5:['🌰','بذرة سمسم','حوالي ٢ مم','القلب بيبدأ يتكون والأنبوب العصبي بيتقفل.','الفوليك أسيد مهم جداً للأنبوب العصبي.'],
+ 6:['🫘','حبة عدس','حوالي ٦ مم','ممكن يبان نبض القلب في السونار.','الغثيان؟ وجبات صغيرة كتير وبسكوت ناشف الصبح.'],
+ 7:['🫐','حبة توت','حوالي ١ سم','المخ بيكبر بسرعة وبتبتدي الإيدين والرجلين تظهر.','اشربي مية كتير ولو الترجيع شديد كلمي الدكتور.'],
+ 8:['🍇','حباية عنب','حوالي ١.٦ سم','صوابع صغيرة بتبتدي تتشكل والبيبي بيتحرك وانتي لسه مش حاسة.','اتعبتي؟ ده طبيعي. ريحي كل ما تقدري.'],
+ 9:['🍒','حباية كريز','حوالي ٢.٣ سم','كل الأعضاء الأساسية موجودة وبتكمل نموها.','اختاري سوتيان مريح، الصدر بيكبر.'],
+ 10:['🍓','فراولاية','حوالي ٣ سم','البيبي خلص المرحلة الجنينية وبقى اسمه «جنين».','اسألي الدكتور عن تحاليل الثلث الأول.'],
+ 11:['🫒','تينة','حوالي ٤ سم','الضوافر بتبتدي تتكون والعضم بيقسى.','مشي خفيف ٢٠ دقيقة بيفرق كتير.'],
+ 12:['🍋','ليمونة','حوالي ٥.٥ سم','ردود الفعل بتبدأ: البيبي بيقفل صوابعه ويفتحها.','ميعاد سونار الشفافية القفوية غالباً بين ١١ و١٤.'],
+ 13:['🍑','خوخاية','حوالي ٧ سم','آخر أسبوع في الثلث الأول! البصمات بتتكون.','الغثيان غالباً بيبتدي يخف من هنا.'],
+ 14:['🍋','ليمونة كبيرة','حوالي ٨.٥ سم','البيبي بيعمل تعابير بوشه.','ابدئي ترطبي بطنك عشان الشد.'],
+ 15:['🍎','تفاحة','حوالي ١٠ سم','بيحس بالنور حتى والعين مقفولة.','الحديد والكالسيوم مهمين، اسألي الدكتور على المكملات.'],
+ 16:['🥑','أفوكادو','حوالي ١٢ سم · ١٠٠ جم','ممكن يبان النوع في السونار.','نامي على جنبك الشمال لو مريحك.'],
+ 17:['🍐','كمثرى','حوالي ١٣ سم · ١٤٠ جم','بيتكون الدهن تحت الجلد.','ممكن تحسي بدوخة لو قمتي بسرعة، قومي بالراحة.'],
+ 18:['🫑','فلفلاية رومي','حوالي ١٤ سم · ١٩٠ جم','ودانه في مكانها وممكن يسمع صوتك.','كلمي البيبي وشغليله صوت هادي.'],
+ 19:['🥭','مانجاية صغيرة','حوالي ١٥ سم · ٢٤٠ جم','جلده متغطي بطبقة بتحميه.','ممكن تحسي أول حركة كأنها فراشات.'],
+ 20:['🍌','موزة','حوالي ٢٥ سم · ٣٠٠ جم','نص المشوار! البيبي بيبلع وبيتدرب.','ميعاد السونار التفصيلي بين ١٨ و٢٢.'],
+ 21:['🥕','جزرة','حوالي ٢٧ سم · ٣٦٠ جم','الحركة بقت أوضح.','قللي السكريات وكُلي خضار وبروتين.'],
+ 22:['🥥','جوزة هند صغيرة','حوالي ٢٨ سم · ٤٣٠ جم','الحواجب والرموش بتظهر.','لو رجلك بتورم ارفعيها وانتي قاعدة.'],
+ 23:['🍊','جريب فروت','حوالي ٢٩ سم · ٥٠٠ جم','الرئة بتتجهز للتنفس.','اعرفي علامات الولادة المبكرة واسألي الدكتور عليها.'],
+ 24:['🌽','كوز درة','حوالي ٣٠ سم · ٦٠٠ جم','الوش اتشكل تقريباً.','تحليل السكر (منحنى الجلوكوز) غالباً بين ٢٤ و٢٨.'],
+ 25:['🥦','قرنبيطة','حوالي ٣٤ سم · ٦٦٠ جم','الشعر بيطلع وبيبقى له لون.','تمارين التنفس بتساعد في النوم والولادة.'],
+ 26:['🥬','خسة','حوالي ٣٥ سم · ٧٦٠ جم','العينين بتبتدي تفتح.','لو عندك حرقان، كلي كميات صغيرة وما تناميش بعد الأكل على طول.'],
+ 27:['🥬','كرنبة صغيرة','حوالي ٣٦ سم · ٨٧٠ جم','آخر أسبوع في الثلث التاني!','ابدئي تفكري في كورس تجهيز للولادة.'],
+ 28:['🍆','باذنجانة كبيرة','حوالي ٣٧ سم · ١ كجم','البيبي بيحلم وبيفتح ويقفل عينيه. ابدئي عدّ الركلات من النهارده.','لو فصيلة دمك سالبة اسألي على حقنة Anti-D.'],
+ 29:['🎃','قرعاية صغيرة','حوالي ٣٨ سم · ١.٢ كجم','العضم بيقوى، يبقى الكالسيوم مهم.','اعملي عدّ الركلات كل يوم في نفس الوقت.'],
+ 30:['🥬','كرنبة','حوالي ٣٩ سم · ١.٣ كجم','البيبي بيزود دهن وبيتحكم في حرارته أحسن.','خدي راحتك ونامي بمخدات بين رجليكي.'],
+ 31:['🥥','جوزة هند','حوالي ٤١ سم · ١.٥ كجم','كل الحواس الخمسة شغالة.','ممكن تحسي بانقباضات خفيفة متقطعة (براكستون هيكس).'],
+ 32:['🍍','أناناساية صغيرة','حوالي ٤٢ سم · ١.٧ كجم','البيبي بيتمرن على التنفس.','سونار نمو غالباً هنا.'],
+ 33:['🍍','أناناساية','حوالي ٤٤ سم · ١.٩ كجم','المناعة بتنتقل منك للبيبي.','حضّري ورق المستشفى ورقم الطوارئ.'],
+ 34:['🍈','شمامة صغيرة','حوالي ٤٥ سم · ٢.١ كجم','الرئة قربت تكمل.','ابدئي تجهيز شنطة الولادة.'],
+ 35:['🍈','شمامة','حوالي ٤٦ سم · ٢.٤ كجم','المساحة ضاقت فالحركة بتحس إنها مختلفة.','مسحة GBS غالباً بين ٣٥ و٣٧.'],
+ 36:['🥬','خسة رومي كبيرة','حوالي ٤٧ سم · ٢.٦ كجم','البيبي ممكن ينزل في الحوض.','زيارات الدكتور بتبقى كل أسبوع غالباً.'],
+ 37:['🥬','سلق','حوالي ٤٨ سم · ٢.٩ كجم','البيبي بقى مكتمل المدة المبكرة.','اعرفي إمتى تروحي المستشفى: نزول مية، نزيف، طلق منتظم.'],
+ 38:['🧅','حزمة كرات','حوالي ٤٩ سم · ٣.١ كجم','بيتدرب على المص والبلع.','ارتاحي وخلي الشنطة جنب الباب.'],
+ 39:['🍉','بطيخة صغيرة','حوالي ٥٠ سم · ٣.٣ كجم','جاهز للدنيا!','لو الحركة قلّت بشكل ملحوظ كلمي الدكتور فوراً.'],
+ 40:['🍉','بطيخة','حوالي ٥١ سم · ٣.٤ كجم','الأسبوع المتوقع للولادة. مبروك مقدماً!','ميعاد الولادة تقديري، وكتير بيولدوا قبله أو بعده بأسبوع.'],
+ 41:['🍉','بطيخة','حوالي ٥٢ سم · ٣.٦ كجم','لسه البيبي مستني.','تابعي مع الدكتور، ممكن يقترح متابعة أكتر أو تحريض.'],
+ 42:['🍉','بطيخة','حوالي ٥٢ سم · ٣.٧ كجم','آخر حد للحمل الطبيعي.','لازم متابعة قريبة مع الدكتور.']
+};
+const TESTS = [
+ [6,10,'أول زيارة: تأكيد الحمل بالسونار وتحديد العمر'],
+ [8,12,'تحاليل الدم الأولى: صورة دم، فصيلة، سكر، غدة، فيروسات'],
+ [11,14,'سونار الشفافية القفوية (NT) + تحليل الثلث الأول'],
+ [18,22,'السونار التفصيلي (Anomaly scan)'],
+ [24,28,'تحليل السكر (منحنى الجلوكوز)'],
+ [28,28,'صورة دم + حقنة Anti-D لو الفصيلة سالبة'],
+ [32,34,'سونار نمو ووضع البيبي'],
+ [35,37,'مسحة GBS'],
+ [36,40,'متابعة أسبوعية وتجهيز للولادة']
+];
+const BAG = ['البطاقة وورق المتابعة والتحاليل','هدوم مريحة بزراير قدام','سوتيان رضاعة وفوط صدر','فوط صحية بعد الولادة','شبشب وشراب','شاحن الموبايل','هدوم البيبي (٢-٣ طقم)','بطانية خفيفة للبيبي','حفاضات مقاس نيو بورن','مناديل مبللة','طقم خروج للبيبي','كرسي السيارة لو هتروحوا بعربية'];
+
+/* ---------- Helpers ---------- */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const DAY = 86400000;
+const ar = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+const pad = n => String(n).padStart(2,'0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
+const today0 = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
+const addDays = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const fmtDate = d => d.toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const fmtShort = d => d.toLocaleDateString('ar-EG',{day:'numeric',month:'short'});
+const fmtTime = t => { const [h,m] = t.split(':').map(Number); const h12 = ((h+11)%12)+1; return `${ar(h12)}:${ar(pad(m))} ${h<12?'ص':'م'}`; };
+const uid = () => Math.random().toString(36).slice(2,10);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- State ---------- */
+const KEY = 'hamly-v1';
+let S;
+function blank(){ return {name:'',lmp:null,meds:[],taken:{},appts:[],tests:{},bag:{},kicks:[],contr:[],weights:[],water:{},lastWeekSeen:0,notified:{}}; }
+function load(){ try{ S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY)||'{}')); }catch(e){ S = blank(); } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast('مقدرناش نحفظ، المساحة مليانة أو التخزين مقفول'); } }
+
+function preg(date = today0()){
+  const lmp = parse(S.lmp);
+  const days = Math.floor((date - lmp)/DAY);
+  const due = addDays(lmp,280);
+  const w = Math.floor(days/7), d = days%7;
+  return {days, w, d, week: Math.min(42, Math.max(1, w+1)), due, left: Math.round((due - date)/DAY), pct: Math.min(100, Math.max(0, Math.round(days/280*100)))};
+}
+const trimester = wk => wk <= 13 ? 'الثلث الأول' : wk <= 27 ? 'الثلث التاني' : 'الثلث الأخير';
+
+/* ---------- Toast ---------- */
+let toastT;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(()=> t.hidden = true, 2600); }
+
+/* ---------- Navigation ---------- */
+function go(view){
+  $$('.view').forEach(v => v.hidden = v.id !== 'v-'+view);
+  $$('#tabs button').forEach(b => { if (b.dataset.go === view) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  window.scrollTo(0,0);
+  render();
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) go(b.dataset.go); });
+
+/* ---------- Doses ---------- */
+function medActiveOn(m, date){
+  const start = parse(m.start);
+  if (date < start) return false;
+  if (m.days && (date - start)/DAY >= m.days) return false;
+  return true;
+}
+function dosesFor(date){
+  const list = [];
+  S.meds.forEach(m => { if (medActiveOn(m,date)) m.times.forEach(t => list.push({m, t, key: m.id+'@'+t})); });
+  return list.sort((a,b) => a.t.localeCompare(b.t));
+}
+function doseHTML(x, dateKey){
+  const done = !!(S.taken[dateKey]||{})[x.key];
+  return `<div class="dose ${done?'done':''}"><div class="time">${fmtTime(x.t)}</div><div style="flex:1;min-width:0"><div class="name" style="font-weight:600">${esc(x.m.name)}</div><div class="muted">${esc(x.m.dose||'')}${x.m.notes? ' · '+esc(x.m.notes):''}</div></div><button class="check" data-take="${x.key}" aria-label="${done?'إلغاء':'خدتها'}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg></button></div>`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-take]'); if (!b) return;
+  const k = ymd(today0()); S.taken[k] = S.taken[k]||{};
+  S.taken[k][b.dataset.take] = !S.taken[k][b.dataset.take];
+  if (S.taken[k][b.dataset.take]) toast('برافو! اتسجلت ✓');
+  save(); render();
+});
+
+/* ---------- Render ---------- */
+function render(){
+  if (!S.lmp) return;
+  const p = preg(), wk = p.week, info = WEEKS[wk];
+  const h = new Date().getHours();
+  $('#hello').textContent = (h < 12 ? 'صباح الخير' : 'مساء الخير') + (S.name ? ` يا ${S.name}` : '');
+  $('#homeTitle').textContent = p.days < 0 ? 'التاريخ لسه ما جاش' : `انتي في الأسبوع ${ar(wk)}`;
+  $('#trimChip').textContent = trimester(wk);
+  $('#ringWeek').textContent = ar(wk);
+  $('#ringFg').style.strokeDashoffset = 326.7 * (1 - p.pct/100);
+  $('#gaText').textContent = `${ar(p.w)} أسبوع و${ar(p.d)} ${p.d===1?'يوم':'أيام'}`;
+  $('#dueText').textContent = 'ميعاد الولادة المتوقع: ' + fmtDate(p.due);
+  $('#leftText').textContent = p.left > 0 ? `فاضل ${ar(p.left)} يوم (حوالي ${ar(Math.ceil(p.left/7))} أسبوع)` : 'وصلنا لميعاد الولادة المتوقع 💗';
+  $('#stPct').textContent = ar(p.pct) + '٪';
+  const doses = dosesFor(today0()), tk = S.taken[ymd(today0())]||{};
+  $('#stDoses').textContent = `${ar(doses.filter(x=>tk[x.key]).length)}/${ar(doses.length)}`;
+  const next = upcomingAppts()[0];
+  $('#stAppt').textContent = next ? fmtShort(parse(next.date)) : '—';
+
+  // weekly banner
+  if (S.lastWeekSeen !== wk){
+    $('#weekBanner').hidden = false;
+    $('#weekBanner').textContent = `🎉 مبروك! دخلتي الأسبوع ${ar(wk)}. البيبي دلوقتي قد ${info[1]}.`;
+    S.lastWeekSeen = wk; save();
+  }
+  renderWeek(selWeek || wk, wk);
+
+  $('#homeDoses').innerHTML = doses.length ? doses.map(x => doseHTML(x, ymd(today0()))).join('') : `<div class="empty">مفيش أدوية النهارده. ضيفي الفيتامينات من صفحة الأدوية.</div>`;
+  $('#todayDoses').innerHTML = doses.length ? doses.map(x => doseHTML(x, ymd(today0()))).join('') : `<div class="empty">مفيش جرعات النهارده.</div>`;
+
+  $('#medList').innerHTML = S.meds.length ? S.meds.map(m => {
+    const end = m.days ? addDays(parse(m.start), m.days-1) : null;
+    const active = medActiveOn(m, today0()) ? '<span class="chip">شغال</span>' : '<span class="chip warn">مش شغال النهارده</span>';
+    return `<div class="item"><div class="body"><div class="row"><b>${esc(m.name)}</b>${active}</div><div class="muted">${esc(m.dose||'')} · ${m.times.map(fmtTime).join(' و ')}</div><div class="muted">من ${fmtShort(parse(m.start))} ${end? 'لحد '+fmtShort(end) : '· مستمر'}</div></div><button class="btn-ghost btn-sm" data-edit="${m.id}">تعديل</button><button class="btn-danger btn-sm" data-del-med="${m.id}">حذف</button></div>`;
+  }).join('') : `<div class="empty">لسه ما ضفتيش أدوية.</div>`;
+
+  const ups = upcomingAppts();
+  $('#apptList').innerHTML = ups.length ? ups.map(a => `<div class="item"><div class="body"><b>${esc(a.title)}</b><div class="muted">${fmtDate(parse(a.date))} · ${fmtTime(a.time)}</div>${a.notes?`<div class="muted">${esc(a.notes)}</div>`:''}</div><button class="btn-danger btn-sm" data-del-appt="${a.id}">حذف</button></div>`).join('') : `<div class="empty">مفيش مواعيد جاية.</div>`;
+
+  $('#testsList').innerHTML = TESTS.map(([a,b,t],i) => {
+    const st = wk > b ? 'past' : wk >= a ? 'now' : '';
+    const range = a===b ? `أسبوع ${ar(a)}` : `أسبوع ${ar(a)}–${ar(b)}`;
+    return `<div class="item ${st}"><span class="dot"></span><div class="body"><b>${t}</b><div class="muted">${range} ${st==='now'?'<span class="chip rose">دلوقتي</span>':''}</div></div><input type="checkbox" style="width:22px;height:22px" data-test="${i}" ${S.tests[i]?'checked':''} aria-label="خلصت"></div>`;
+  }).join('');
+
+  $('#bagList').innerHTML = BAG.map((t,i)=>`<label class="item" style="flex-direction:row;color:var(--ink);font-size:1rem"><input type="checkbox" style="width:22px;height:22px" data-bag="${i}" ${S.bag[i]?'checked':''}><span class="body">${t}</span></label>`).join('');
+
+  renderKicks(); renderContr(); renderWeight(); renderWater(); renderSettings();
+}
+
+let selWeek = 0;
+function renderWeek(w, cur){
+  const info = WEEKS[w];
+  $('#babyWeekLbl').textContent = w === cur ? 'الأسبوع ده' : `الأسبوع ${ar(w)}`;
+  $('#fruit').textContent = info[0];
+  $('#fruitName').textContent = 'قد ' + info[1];
+  $('#fruitMeasure').textContent = info[2];
+  $('#devText').textContent = info[3];
+  $('#tipText').textContent = info[4];
+  const bar = $('#weekbar');
+  if (!bar.childElementCount){
+    bar.innerHTML = Array.from({length:42},(_,i)=>`<button type="button" data-week="${i+1}">${ar(i+1)}</button>`).join('');
+  }
+  $$('#weekbar button').forEach(b => { b.classList.toggle('cur', +b.dataset.week === cur); b.classList.toggle('sel', +b.dataset.week === w && w !== cur); });
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-week]'); if (!b) return;
+  selWeek = +b.dataset.week; renderWeek(selWeek, preg().week);
+});
+let weekbarScrolled = false;
+function scrollWeekbar(){ if (weekbarScrolled) return; const c = $('#weekbar .cur'); if (c){ c.scrollIntoView({inline:'center',block:'nearest'}); weekbarScrolled = true; } }
+
+function upcomingAppts(){
+  const now = new Date();
+  return S.appts.filter(a => new Date(parse(a.date).getTime() + (+a.time.slice(0,2))*3600000 + (+a.time.slice(3))*60000) >= now - 3600000)
+    .sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+}
+
+/* ---------- Two-tap delete ---------- */
+function armed(btn){
+  if (btn.classList.contains('armed')) return true;
+  btn.classList.add('armed'); const old = btn.textContent; btn.textContent = 'متأكدة؟';
+  setTimeout(()=>{ btn.classList.remove('armed'); btn.textContent = old; }, 3000);
+  return false;
+}
+document.addEventListener('click', e => {
+  let b;
+  if ((b = e.target.closest('[data-del-med]')) && armed(b)){ S.meds = S.meds.filter(m => m.id !== b.dataset.delMed); save(); render(); toast('اتحذف الدوا'); }
+  if ((b = e.target.closest('[data-del-appt]')) && armed(b)){ S.appts = S.appts.filter(a => a.id !== b.dataset.delAppt); save(); render(); toast('اتحذف الميعاد'); }
+  if ((b = e.target.closest('[data-edit]'))) editMed(b.dataset.edit);
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.test !== undefined){ S.tests[t.dataset.test] = t.checked; save(); }
+  if (t.dataset.bag !== undefined){ S.bag[t.dataset.bag] = t.checked; save(); }
+});
+
+/* ---------- Med form ---------- */
+const DEFAULT_TIMES = {1:['09:00'],2:['09:00','21:00'],3:['08:00','14:00','20:00'],4:['08:00','12:00','16:00','20:00']};
+function drawTimes(vals){
+  const n = +$('#mTimesCount').value;
+  vals = vals || DEFAULT_TIMES[n];
+  $('#mTimes').innerHTML = Array.from({length:n},(_,i)=>`<label>الميعاد ${ar(i+1)}<input type="time" class="mTime" id="mTime${i}" value="${vals[i]||DEFAULT_TIMES[n][i]}" required></label>`).join('');
+}
+$('#mTimesCount').addEventListener('change', () => drawTimes());
+function resetMedForm(){
+  $('#medForm').reset(); $('#mId').value=''; $('#mStart').value = ymd(today0());
+  $('#medFormTitle').textContent = 'إضافة دوا'; $('#medCancel').hidden = true; drawTimes();
+}
+function editMed(id){
+  const m = S.meds.find(x => x.id === id); if (!m) return;
+  $('#mId').value = m.id; $('#mName').value = m.name; $('#mDose').value = m.dose||''; $('#mStart').value = m.start;
+  $('#mDays').value = m.days||''; $('#mNotes').value = m.notes||''; $('#mTimesCount').value = m.times.length; drawTimes(m.times);
+  $('#medFormTitle').textContent = 'تعديل ' + m.name; $('#medCancel').hidden = false;
+  $('#medForm').scrollIntoView({behavior:'smooth'});
+}
+$('#medCancel').addEventListener('click', resetMedForm);
+$('#medForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const m = { id: $('#mId').value || uid(), name: $('#mName').value.trim(), dose: $('#mDose').value.trim(), start: $('#mStart').value,
+    days: +$('#mDays').value || 0, notes: $('#mNotes').value.trim(), times: $$('.mTime').map(i => i.value).sort() };
+  const i = S.meds.findIndex(x => x.id === m.id);
+  if (i >= 0) S.meds[i] = m; else S.meds.push(m);
+  save(); resetMedForm(); render(); toast('اتحفظ الدوا ✓ هنفكرك في مواعيده');
+});
+
+/* ---------- Appointments ---------- */
+$('#apptForm').addEventListener('submit', e => {
+  e.preventDefault();
+  S.appts.push({id:uid(), title:$('#aTitle').value.trim(), date:$('#aDate').value, time:$('#aTime').value, notes:$('#aNotes').value.trim()});
+  save(); $('#apptForm').reset(); $('#aTime').value='18:00'; render(); toast('اتحفظ الميعاد ✓');
+});
+
+/* ---------- Tools: sub tabs ---------- */
+$$('[data-sub]').forEach(b => b.addEventListener('click', () => {
+  $$('[data-sub]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  $$('.sub').forEach(s => s.hidden = s.id !== 'sub-'+b.dataset.sub);
+}));
+
+/* Kicks */
+let kick = null, kickTick;
+const mmss = ms => { const s = Math.floor(ms/1000); return `${ar(Math.floor(s/60))}:${ar(pad(s%60))}`; };
+$('#kickBtn').addEventListener('click', () => {
+  if (!kick){ kick = {start: Date.now(), count: 0}; $('#kickBtn').textContent = 'اتحرك! 👣'; $('#kickEnd').hidden = false; kickTick = setInterval(renderKicks, 1000); }
+  else { kick.count++; if (navigator.vibrate) navigator.vibrate(30); if (kick.count === 10) toast('١٠ حركات! كده تمام 💗'); }
+  renderKicks();
+});
+$('#kickEnd').addEventListener('click', () => {
+  if (kick && kick.count){ S.kicks.unshift({start:kick.start, end:Date.now(), count:kick.count}); S.kicks = S.kicks.slice(0,30); save(); toast('اتحفظت الجلسة'); }
+  kick = null; clearInterval(kickTick); $('#kickBtn').textContent = 'ابدأي'; $('#kickEnd').hidden = true; renderKicks();
+});
+function renderKicks(){
+  $('#kickCount').textContent = ar(kick ? kick.count : 0);
+  $('#kickTimer').textContent = kick ? `بقالك ${mmss(Date.now()-kick.start)}` : 'اضغطي «ابدأي» عشان تبدئي العد';
+  $('#kickList').innerHTML = S.kicks.length ? '<h3 style="margin-top:8px">آخر الجلسات</h3>' + S.kicks.slice(0,7).map(k => `<div class="item"><div class="body">${fmtShort(new Date(k.start))} · ${new Date(k.start).toLocaleTimeString('ar-EG',{hour:'numeric',minute:'2-digit'})}</div><b>${ar(k.count)} حركة في ${mmss(k.end-k.start)}</b></div>`).join('') : '';
+}
+
+/* Contractions */
+let cur = null, cTick;
+$('#contrBtn').addEventListener('click', () => {
+  if (!cur){ cur = Date.now(); $('#contrBtn').textContent = 'خلصت الطلقة'; cTick = setInterval(()=>{ $('#contrBtn').textContent = 'خلصت الطلقة ' + mmss(Date.now()-cur); }, 1000); }
+  else { S.contr.unshift({s:cur, e:Date.now()}); S.contr = S.contr.slice(0,60); cur = null; clearInterval(cTick); $('#contrBtn').textContent = 'بدأت الطلقة'; save(); renderContr(); }
+});
+$('#contrClear').addEventListener('click', e => { if (armed(e.currentTarget)){ S.contr = []; save(); renderContr(); } });
+function renderContr(){
+  const c = S.contr, hour = c.filter(x => Date.now() - x.s < 3600000);
+  $('#cCount').textContent = ar(hour.length);
+  const recent = c.slice(0,6);
+  $('#cAvgDur').textContent = recent.length ? mmss(recent.reduce((a,x)=>a+(x.e-x.s),0)/recent.length) : '—';
+  const gaps = recent.slice(0,-1).map((x,i)=> x.s - recent[i+1].s);
+  $('#cAvgGap').textContent = gaps.length ? mmss(gaps.reduce((a,b)=>a+b,0)/gaps.length) : '—';
+  $('#contrList').innerHTML = c.slice(0,10).map((x,i)=>`<div class="item"><div class="body">${new Date(x.s).toLocaleTimeString('ar-EG',{hour:'numeric',minute:'2-digit'})}</div><span class="muted">المدة ${mmss(x.e-x.s)}${c[i+1]?` · بعد ${mmss(x.s-c[i+1].s)}`:''}</span></div>`).join('');
+}
+
+/* Weight */
+$('#wForm').addEventListener('submit', e => {
+  e.preventDefault();
+  S.weights = S.weights.filter(w => w.date !== $('#wDate').value);
+  S.weights.push({date:$('#wDate').value, kg:+$('#wKg').value});
+  S.weights.sort((a,b)=>a.date.localeCompare(b.date)); save(); $('#wKg').value=''; renderWeight(); toast('اتسجل الوزن');
+});
+function renderWeight(){
+  const W = S.weights;
+  if (!W.length){ $('#wSummary').textContent = 'سجلي وزنك مرة في الأسبوع في نفس اليوم والوقت.'; $('#wChart').innerHTML=''; $('#wList').innerHTML=''; return; }
+  const diff = (W[W.length-1].kg - W[0].kg).toFixed(1);
+  $('#wSummary').textContent = `الزيادة من أول تسجيل: ${ar(diff)} كجم`;
+  if (W.length > 1){
+    const min = Math.min(...W.map(w=>w.kg)) - 1, max = Math.max(...W.map(w=>w.kg)) + 1, w = 320, h = 120;
+    const t0 = parse(W[0].date).getTime(), t1 = parse(W[W.length-1].date).getTime() || t0+1;
+    const pts = W.map(x => [20 + (parse(x.date).getTime()-t0)/(t1-t0||1)*(w-40), h-15 - (x.kg-min)/(max-min)*(h-30)]);
+    const line = pts.map(p=>p.join(',')).join(' ');
+    $('#wChart').innerHTML = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;direction:ltr"><polyline points="${line}" fill="none" stroke="var(--rose)" stroke-width="2.5" stroke-linejoin="round"/>${pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="var(--rose)"/>`).join('')}<text x="${pts.at(-1)[0]}" y="${pts.at(-1)[1]-8}" font-size="11" text-anchor="middle" fill="var(--ink)">${W.at(-1).kg}</text></svg>`;
+  } else $('#wChart').innerHTML = '';
+  $('#wList').innerHTML = W.slice().reverse().slice(0,8).map(x=>`<div class="item"><div class="body">${fmtShort(parse(x.date))}</div><b>${ar(x.kg)} كجم</b></div>`).join('');
+}
+
+/* Water */
+function renderWater(){ $('#waterCount').textContent = ar(S.water[ymd(today0())]||0); }
+$('#waterAdd').addEventListener('click', () => { const k = ymd(today0()); S.water[k] = (S.water[k]||0)+1; save(); renderWater(); if (S.water[k]===10) toast('برافو! خلصتي هدف المية 💧'); });
+$('#waterSub').addEventListener('click', () => { const k = ymd(today0()); S.water[k] = Math.max(0,(S.water[k]||0)-1); save(); renderWater(); });
+
+/* ---------- Notifications (while app is open / in background) ---------- */
+let swReg = null;
+if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').then(r => swReg = r).catch(()=>{});
+async function notify(title, body, tag){
+  if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+  const opts = {body, tag, icon:'icon.svg', badge:'icon.svg', dir:'rtl', lang:'ar', vibrate:[200,100,200]};
+  try { if (swReg) { await swReg.showNotification(title, opts); return true; } new Notification(title, opts); return true; } catch(e){ return false; }
+}
+function renderSettings(){
+  let st;
+  if (!('Notification' in window)) st = 'المتصفح ده مش بيدعم الإشعارات. على الآيفون لازم تضيفي التطبيق للشاشة الرئيسية الأول (Share ← Add to Home Screen).';
+  else if (Notification.permission === 'granted') st = 'الإشعارات شغالة ✓ هنفكرك بالأدوية والأسبوع الجديد طول ما التطبيق مفتوح أو في الخلفية.';
+  else if (Notification.permission === 'denied') st = 'الإشعارات مقفولة. افتحيها من إعدادات المتصفح للموقع ده.';
+  else st = 'الإشعارات لسه مش متفعلة.';
+  $('#notifState').textContent = st;
+  $('#notifBtn').hidden = !('Notification' in window) || Notification.permission === 'granted';
+  if (S.lmp){ $('#pName').value = $('#pName').value || S.name; $('#pLmp').value = $('#pLmp').value || S.lmp; $('#pDue').textContent = 'ميعاد الولادة المتوقع: ' + fmtDate(addDays(parse(S.lmp),280)); }
+}
+$('#notifBtn').addEventListener('click', async () => {
+  const r = await Notification.requestPermission(); renderSettings();
+  if (r === 'granted'){ notify('حملي', 'تمام! الإشعارات اتفعلت 💗', 'welcome'); }
+});
+$('#notifTest').addEventListener('click', async () => { if (!(await notify('ميعاد الدوا 💊','ده إشعار تجربة. كده هيوصلك التذكير.','test'))) toast('فعّلي الإشعارات الأول'); });
+
+function checkReminders(){
+  if (!S.lmp) return;
+  const now = new Date(), k = ymd(today0()), hm = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  S.notified[k] = S.notified[k] || {};
+  const N = S.notified[k];
+  dosesFor(today0()).forEach(x => {
+    const done = (S.taken[k]||{})[x.key];
+    if (!done && x.t <= hm && !N[x.key]){
+      const late = (now - new Date(`${k}T${x.t}`))/60000;
+      if (late < 60) notify(`ميعاد ${x.m.name} 💊`, `${x.m.dose || 'الجرعة'} — الساعة ${fmtTime(x.t)}${x.m.notes ? ' · '+x.m.notes : ''}`, x.key);
+      N[x.key] = 1; save();
+    }
+  });
+  upcomingAppts().forEach(a => {
+    const at = new Date(`${a.date}T${a.time}`), mins = (at - now)/60000, key = 'appt-'+a.id;
+    if (mins <= 120 && mins > 0 && !N[key]){ notify(`ميعاد النهارده: ${a.title}`, `الساعة ${fmtTime(a.time)}`, key); N[key]=1; save(); }
+  });
+  const wk = preg().week, wkKey = 'week-'+wk;
+  if (!S.notified[wkKey]){ S.notified[wkKey] = 1; save(); if (wk > 1) notify(`انتي في الأسبوع ${ar(wk)} 🎉`, `البيبي دلوقتي قد ${WEEKS[wk][1]}. ${WEEKS[wk][4]}`, wkKey); }
+  // prune old notify logs
+  Object.keys(S.notified).forEach(d => { if (/^\d{4}-/.test(d) && d < ymd(addDays(today0(),-3))) delete S.notified[d]; });
+}
+setInterval(checkReminders, 30000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden){ checkReminders(); render(); } });
+
+/* ---------- Calendar export (.ics) ---------- */
+const icsDT = (d, t) => `${d.replace(/-/g,'')}T${t.replace(':','')}00`;
+const icsEsc = s => String(s||'').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/[,;]/g, m => '\\'+m);
+function vevent({uid, start, end, title, desc, rrule, alarms}){
+  const stamp = new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
+  let e = `BEGIN:VEVENT\r\nUID:${uid}@hamly\r\nDTSTAMP:${stamp}\r\nDTSTART:${start}\r\nDTEND:${end}\r\nSUMMARY:${icsEsc(title)}\r\n`;
+  if (desc) e += `DESCRIPTION:${icsEsc(desc)}\r\n`;
+  if (rrule) e += `RRULE:${rrule}\r\n`;
+  (alarms||['PT0M']).forEach(a => e += `BEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:${icsEsc(title)}\r\nTRIGGER:-${a}\r\nEND:VALARM\r\n`);
+  return e + 'END:VEVENT\r\n';
+}
+const plus = (t, min) => { const [h,m] = t.split(':').map(Number); const x = h*60+m+min; return `${pad(Math.floor(x/60)%24)}:${pad(x%60)}`; };
+function medEvents(){
+  return S.meds.flatMap(m => m.times.map(t => vevent({uid:`med-${m.id}-${t.replace(':','')}`, start:icsDT(m.start,t), end:icsDT(m.start,plus(t,10)),
+    title:`💊 ${m.name}${m.dose?' — '+m.dose:''}`, desc:m.notes, rrule: m.days ? `FREQ=DAILY;COUNT=${m.days}` : 'FREQ=DAILY'})));
+}
+function weekEvents(){
+  const lmp = parse(S.lmp), cw = preg().week;
+  const out = [];
+  for (let w = Math.max(2,cw); w <= 42; w++){
+    const d = ymd(addDays(lmp,(w-1)*7)), info = WEEKS[w];
+    out.push(vevent({uid:`week-${S.lmp}-${w}`, start:icsDT(d,'10:00'), end:icsDT(d,'10:15'), title:`🤰 انتي في الأسبوع ${w} من الحمل`, desc:`البيبي دلوقتي قد ${info[1]} ${info[2]}\n${info[3]}\nنصيحة: ${info[4]}`}));
+  }
+  return out;
+}
+function apptEvents(){
+  return upcomingAppts().map(a => vevent({uid:`appt-${a.id}`, start:icsDT(a.date,a.time), end:icsDT(a.date,plus(a.time,60)), title:`🩺 ${a.title}`, desc:a.notes, alarms:['P1D','PT2H']}));
+}
+function downloadIcs(events, name){
+  if (!events.length){ toast('مفيش حاجة تتضاف للتقويم لسه'); return; }
+  const ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Hamly//AR\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:حملي\r\n${events.join('')}END:VCALENDAR\r\n`;
+  const blob = new Blob([ics], {type:'text/calendar;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name + '.ics';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
+  toast('افتحي الملف واختاري «إضافة للتقويم»');
+}
+$('#icsMeds').onclick = $('#icsMeds2').onclick = () => downloadIcs(medEvents(), 'hamly-medicines');
+$('#icsAppts').onclick = $('#icsAppts2').onclick = () => downloadIcs(apptEvents(), 'hamly-appointments');
+$('#icsWeeks').onclick = () => downloadIcs(weekEvents(), 'hamly-weeks');
+$('#icsAll').onclick = () => downloadIcs([...weekEvents(), ...medEvents(), ...apptEvents()], 'hamly-all');
+
+/* ---------- Settings: profile, backup ---------- */
+$('#profileForm').addEventListener('submit', e => { e.preventDefault(); S.name = $('#pName').value.trim(); S.lmp = $('#pLmp').value; save(); render(); toast('اتحفظ ✓'); });
+$('#exportBtn').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(S,null,1)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `hamly-backup-${ymd(today0())}.json`; a.click();
+});
+$('#importFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { const data = JSON.parse(await f.text()); if (!data.lmp) throw 0; S = Object.assign(blank(), data); save(); boot(); toast('اترجعت النسخة ✓'); }
+  catch(_){ toast('الملف ده مش نسخة من «حملي»'); }
+});
+$('#resetBtn').addEventListener('click', e => { if (armed(e.currentTarget)){ try{ localStorage.removeItem(KEY); }catch(_){} load(); boot(); } });
+
+/* ---------- Onboarding ---------- */
+$('#sMode').addEventListener('change', () => { $('#sDateLbl').firstChild.textContent = $('#sMode').value === 'lmp' ? 'أول يوم في آخر دورة' : 'ميعاد الولادة المتوقع'; });
+$('#sMode').dispatchEvent(new Event('change'));
+$('#setupForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const d = parse($('#sDate').value);
+  S.name = $('#sName').value.trim();
+  S.lmp = $('#sMode').value === 'lmp' ? ymd(d) : ymd(addDays(d,-280));
+  const p = preg();
+  if (p.days < 0 || p.days > 300){ toast('التاريخ ده مش منطقي، راجعيه تاني'); S.lmp = null; return; }
+  S.lastWeekSeen = 0; save(); boot();
+});
+
+function boot(){
+  const has = !!S.lmp;
+  $('#tabs').hidden = !has;
+  if (!has){ $$('.view').forEach(v => v.hidden = v.id !== 'v-setup'); return; }
+  resetMedForm(); $('#aDate').min = ymd(today0()); $('#wDate').value = ymd(today0());
+  go('home'); scrollWeekbar(); checkReminders();
+}
+load(); boot();
+</script>
+</body>
+</html>

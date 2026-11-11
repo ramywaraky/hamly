@@ -1,0 +1,14 @@
+{
+  "name": "حملي — متابعة الحمل",
+  "short_name": "حملي",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#FBF6F7",
+  "theme_color": "#C2496E",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
