@@ -1,4 +1,4 @@
-const CACHE = 'hamly-v1';
+const CACHE = 'hamly-v2';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', e => {
@@ -11,16 +11,18 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
+// Network first (so updates show up right away), cache as offline fallback.
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  const sameOrigin = new URL(e.request.url).origin === location.origin;
   e.respondWith(
-    caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
-      if (res.ok && new URL(e.request.url).origin === location.origin) {
+    fetch(e.request).then(res => {
+      if (res.ok && sameOrigin) {
         const copy = res.clone();
         caches.open(CACHE).then(c => c.put(e.request, copy));
       }
       return res;
-    }).catch(() => caches.match('./index.html')))
+    }).catch(() => caches.match(e.request).then(hit => hit || caches.match('./index.html')))
   );
 });
 

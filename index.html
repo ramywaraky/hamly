@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="حملي">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>try{var t=localStorage.getItem('hamly-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -22,11 +23,16 @@
   --body:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
   color-scheme:light;
 }
-@media (prefers-color-scheme:dark){:root{
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#18141A; --surface:#231D25; --ink:#F2EAF0; --muted:#A898A4; --line:#352C37;
   --rose:#EC7C9E; --rose-soft:#3A2230; --sage:#7CC2B1; --sage-soft:#1F3330; --warn:#E3B05C;
   color-scheme:dark;
 }}
+:root[data-theme="dark"]{
+  --bg:#18141A; --surface:#231D25; --ink:#F2EAF0; --muted:#A898A4; --line:#352C37;
+  --rose:#EC7C9E; --rose-soft:#3A2230; --sage:#7CC2B1; --sage-soft:#1F3330; --warn:#E3B05C;
+  color-scheme:dark;
+}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
 body{padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
@@ -70,7 +76,29 @@ textarea{min-height:64px;resize:vertical}
 .baby{display:flex;gap:14px;align-items:center}
 .baby .fruit{font-size:2.6rem;width:64px;height:64px;border-radius:18px;background:var(--rose-soft);display:flex;align-items:center;justify-content:center;flex:none}
 .weekbar{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
-.weekbar button{flex:none;background:var(--surface);color:var(--ink);border:1px solid var(--line);min-width:44px;padding:6px 0;font-variant-numeric:tabular-nums}
+.weekbar button{flex:none;background:var(--surface);color:var(--ink);border:1px solid var(--line);min-width:60px;padding:6px 4px;font-variant-numeric:tabular-nums;display:flex;flex-direction:column;align-items:center;gap:0;font-size:.75rem;font-weight:500}
+.weekbar button .e{font-size:1.4rem;line-height:1.3}
+.info{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.info div{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 12px;min-width:0}
+.info span{display:block;font-size:.78rem;color:var(--muted)}
+.info b{font-family:var(--display);font-size:.98rem;font-weight:500}
+.progress{height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--rose);border-radius:99px}
+.links{display:flex;flex-direction:column;gap:8px}
+.link{display:flex;align-items:center;gap:12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:12px 14px;text-align:start;font-weight:500;width:100%}
+.link .ic{font-size:1.5rem;width:44px;height:44px;border-radius:12px;background:var(--rose-soft);display:flex;align-items:center;justify-content:center;flex:none}
+.link .t{flex:1;min-width:0}
+.link .arr{color:var(--rose);font-size:1.2rem}
+.blist{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.blist li{display:flex;gap:10px;align-items:flex-start}
+.blist li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--rose);margin-top:9px;flex:none}
+.pagehead{display:flex;align-items:center;gap:10px}
+.pagehead button{background:var(--rose-soft);color:var(--rose);width:40px;height:40px;padding:0;font-size:1.2rem;flex:none}
+.weeknav{display:flex;justify-content:space-between;gap:10px}
+.qa h3{margin-bottom:4px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--rose);color:#fff;border-color:var(--rose)}
 .weekbar button.cur{background:var(--rose);color:#fff;border-color:var(--rose)}
 .weekbar button.sel{outline:2px solid var(--rose)}
 
@@ -171,10 +199,44 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
       <div class="weekbar" id="weekbar" aria-label="تصفحي الأسابيع"></div>
     </section>
 
+    <section class="links" aria-label="أقسام الدليل">
+      <button class="link" data-page="symptoms"><span class="ic">🤰</span><span class="t" id="lnkSym">أعراض الأسبوع</span><span class="arr">‹</span></button>
+      <button class="link" data-page="tips"><span class="ic">💡</span><span class="t" id="lnkTips">نصائح الأسبوع</span><span class="arr">‹</span></button>
+      <button class="link" data-page="nutrition"><span class="ic">🥗</span><span class="t">التغذية الصحية أثناء الحمل</span><span class="arr">‹</span></button>
+      <button class="link" data-go="appts"><span class="ic">🩺</span><span class="t">مواعيد فحوصات الحمل</span><span class="arr">‹</span></button>
+      <button class="link" data-page="changes"><span class="ic">🌸</span><span class="t">تغيرات الحمل والتعامل معها</span><span class="arr">‹</span></button>
+      <button class="link" data-page="warning"><span class="ic">🚨</span><span class="t">علامات لازم تكلمي فيها الدكتور</span><span class="arr">‹</span></button>
+    </section>
+
+    <section class="card stack">
+      <h2>تفاصيل حملك</h2>
+      <div class="info">
+        <div><span>ميعاد الولادة بالميلادي</span><b id="iGreg">—</b></div>
+        <div><span>بالهجري</span><b id="iHijri">—</b></div>
+        <div><span>انتي حامل في الأسبوع</span><b id="iWeek">—</b></div>
+        <div><span>انتي حامل في الشهر</span><b id="iMonth">—</b></div>
+        <div><span>فاضل على الولادة</span><b id="iLeft">—</b></div>
+        <div><span>تاريخ بداية الحمل</span><b id="iStart">—</b></div>
+        <div><span>ولادتك هتكون يوم</span><b id="iDay">—</b></div>
+        <div><span>في فصل</span><b id="iSeason">—</b></div>
+      </div>
+      <div class="progress" aria-hidden="true"><i id="iBar" style="width:0"></i></div>
+      <div class="row between muted" style="font-size:.8rem"><span id="iFrom"></span><span id="iPct"></span><span id="iTo"></span></div>
+    </section>
+
     <section class="card stack">
       <div class="row between"><h2>أدوية النهارده</h2><button class="btn-ghost btn-sm" data-go="meds">إدارة الأدوية</button></div>
       <div class="stack" id="homeDoses"></div>
     </section>
+    <p class="disclaimer">المعلومات هنا عامة ومش بديل عن كلام الدكتور المتابع.</p>
+  </div>
+</main>
+
+<!-- ============ GUIDE PAGE ============ -->
+<main class="wrap view" id="v-page" hidden>
+  <div class="stack">
+    <div class="pagehead"><button type="button" data-go="home" aria-label="رجوع">→</button><h1 id="pgTitle"></h1></div>
+    <div id="pgBody" class="stack"></div>
     <p class="disclaimer">المعلومات هنا عامة ومش بديل عن كلام الدكتور المتابع.</p>
   </div>
 </main>
@@ -307,6 +369,15 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
   <div class="stack">
     <h1>الإشعارات والإعدادات</h1>
     <section class="card stack">
+      <h2>شكل التطبيق</h2>
+      <div class="seg" role="group" aria-label="الوضع">
+        <button type="button" data-theme-set="auto">تلقائي</button>
+        <button type="button" data-theme-set="light">☀️ فاتح</button>
+        <button type="button" data-theme-set="dark">🌙 غامق</button>
+      </div>
+      <p class="muted">«تلقائي» بيمشي مع إعداد الموبايل.</p>
+    </section>
+    <section class="card stack">
       <h2>الإشعارات</h2>
       <p class="muted" id="notifState"></p>
       <div class="row"><button id="notifBtn">تفعيل الإشعارات</button><button class="btn-ghost" id="notifTest">جربي إشعار</button></div>
@@ -404,6 +475,121 @@ const TESTS = [
 ];
 const BAG = ['البطاقة وورق المتابعة والتحاليل','هدوم مريحة بزراير قدام','سوتيان رضاعة وفوط صدر','فوط صحية بعد الولادة','شبشب وشراب','شاحن الموبايل','هدوم البيبي (٢-٣ طقم)','بطانية خفيفة للبيبي','حفاضات مقاس نيو بورن','مناديل مبللة','طقم خروج للبيبي','كرسي السيارة لو هتروحوا بعربية'];
 
+/* Symptoms & body changes per week */
+const SYM = {
+ 1:['الدورة الشهرية نازلة أو لسه خالصة','مفيش أعراض حمل لسه، وده طبيعي'],
+ 2:['ممكن ألم خفيف في جنب واحد وقت التبويض','زيادة في الإفرازات الشفافة','زيادة الرغبة والطاقة عند بعض الستات'],
+ 3:['أغلب الستات مش بيحسوا بحاجة','ممكن نقط دم خفيفة وقت انغراس البويضة','تقلصات بسيطة شبه الدورة'],
+ 4:['تأخر الدورة','ألم وحساسية في الصدر','تعب وإرهاق من غير سبب','تقلصات خفيفة'],
+ 5:['غثيان خصوصاً الصبح','كثرة التبول','حساسية من الروايح','تقلب المزاج'],
+ 6:['الغثيان والترجيع ممكن يزيدوا','إرهاق ونوم كتير','انتفاخ وغازات','الصدر بيكبر ويوجع'],
+ 7:['نفور من أكلات واشتهاء أكلات تانية','زيادة اللعاب','إمساك','صداع'],
+ 8:['غثيان مستمر','دوخة خفيفة','حرقان في المعدة','الهدوم بتبتدي تضيق شوية'],
+ 9:['تقلب المزاج','الأوردة بتبان أكتر على الصدر والبطن','إفرازات بيضا خفيفة من غير ريحة'],
+ 10:['البطن ممكن تبان سنة صغيرة','التعب لسه موجود','انتفاخ وغازات','الدوخة'],
+ 11:['الغثيان ممكن يبتدي يقل','الشهية بتزيد','الضوافر والشعر بيطولوا أسرع'],
+ 12:['الرحم بيطلع فوق الحوض فضغط المثانة بيقل','ممكن كلف أو بقع غامقة في الوش','دوخة لما تقومي بسرعة'],
+ 13:['طاقة أكتر من الأسابيع اللي فاتت','زيادة الإفرازات','خط غامق ممكن يظهر على البطن'],
+ 14:['الشهية بترجع','شد خفيف في جوانب البطن من أربطة الرحم','الوزن بيزيد بشكل منتظم'],
+ 15:['احتقان في الأنف ونزيف بسيط منها أحياناً','نزيف بسيط من اللثة مع التفريش','حرقان في المعدة'],
+ 16:['ممكن تحسي بأول حركة لو مش أول حمل','بشرة منورة أو حبوب','ألم في الضهر'],
+ 17:['إحساس بالحر وعرق أكتر','الشهية مفتوحة','النوم على الضهر بقى مش مريح'],
+ 18:['دوخة لما تقومي بسرعة','تقلصات في الرجل بالليل','ألم في أسفل الضهر'],
+ 19:['حركة البيبي زي الفراشات','علامات تمدد على البطن','ألم في الوركين'],
+ 20:['الرحم وصل لمستوى السرة','ضيق تنفس خفيف','تورم بسيط في القدمين'],
+ 21:['الحركة أوضح وأقوى','دوالي أو عروق رفيعة في الرجل','زيادة الإفرازات'],
+ 22:['الشعر أكتف وأحلى','تورم القدمين آخر اليوم','السرة ممكن تطلع لبره'],
+ 23:['ألم في الضهر','إمساك','نسيان وتشتت («مخ الحمل»)'],
+ 24:['حكة في جلد البطن','جفاف في العين','تنميل في صوابع الإيد'],
+ 25:['حرقان أكتر','صعوبة في النوم','بواسير بسبب الإمساك'],
+ 26:['صداع','ضغط في الحوض','تقلصات خفيفة متقطعة'],
+ 27:['تقلصات الرجل','ضيق في التنفس','التعب بيرجع تاني'],
+ 28:['انقباضات خفيفة متقطعة (براكستون هيكس)','كثرة التبول بترجع','ألم عرق النسا في الرجل'],
+ 29:['البيبي بيرفس بقوة','إمساك وحرقان','الحركة بقت أتقل'],
+ 30:['قلق من الولادة وتقلب مزاج','تعب','ألم تحت الضلوع من الركلات'],
+ 31:['ممكن ينزل سائل أصفر خفيف من الصدر (اللبأ)','ضيق التنفس','صعب تلاقي وضع نوم مريح'],
+ 32:['حرقان شديد','انقباضات متقطعة','تورم الرجلين'],
+ 33:['ألم في الحوض والضهر','صعوبة النوم','إحساس بالحر'],
+ 34:['زغللة خفيفة في النظر','تعب شديد','ضغط على المثانة'],
+ 35:['كثرة التبول جداً','ضغط تحت في الحوض','انقباضات أكتر'],
+ 36:['البطن بتنزل لتحت فالتنفس بيبقى أسهل','المشي بيبقى أصعب','إفرازات أكتر'],
+ 37:['ممكن تنزل السدادة المخاطية','انقباضات تمهيدية','رغبة في ترتيب البيت وتجهيزه'],
+ 38:['تورم في القدمين والإيدين','قلق وتوتر','ألم في الحوض'],
+ 39:['علامات الولادة ممكن تبدأ في أي وقت','إسهال خفيف أحياناً قبل الولادة','تعب ونفاد صبر'],
+ 40:['انتظار الطلق','انقباضات منتظمة بتقرب من بعض = بداية الولادة','نزول مية = روحي المستشفى'],
+ 41:['نفس أعراض الأسبوع ٤٠','قلق من التأخير، وده طبيعي'],
+ 42:['متابعة قريبة جداً مع الدكتور']
+};
+/* Extra tips per week (added to the main weekly tip) */
+const TIPS = {
+ 1:['ابدئي حمض الفوليك حسب كلام الدكتور','بطّلي السجاير وابعدي عن التدخين السلبي','قللي الكافيين لكوبايتين قهوة في اليوم بالكتير'],
+ 2:['كُلي أكل متوازن فيه خضار وفاكهة','اشربي مية كفاية','نامي كويس وقللي التوتر'],
+ 3:['ما تاخديش أي دوا من غير ما تسألي الدكتور','ابعدي عن الكحول تماماً','حافظي على نشاطك العادي'],
+ 4:['اعملي اختبار حمل لو الدورة اتأخرت','احجزي أول زيارة للدكتور','كملي الفوليك أسيد'],
+ 5:['كُلي وجبات صغيرة على مدار اليوم','خلّي بسكوت ناشف جنب السرير للصبح','ارتاحي لما تحسي بتعب'],
+ 6:['الزنجبيل والليمون بيساعدوا في الغثيان','اشربي مية بين الوجبات مش معاها','قومي من السرير بالراحة'],
+ 7:['كُلي ألياف وخضار عشان الإمساك','ابعدي عن الأكل الدسم والحراق','البسي هدوم واسعة'],
+ 8:['اكتبي أسئلتك قبل زيارة الدكتور','ابعدي عن اللحمة والبيض النيين','اغسلي الخضار والفاكهة كويس'],
+ 9:['اتكلمي مع حد قريب لو مزاجك متقلب','البسي سوتيان مريح وداعم','قللي الملح لو عندك انتفاخ'],
+ 10:['اسألي على تحاليل الثلث الأول','اعملي رياضة خفيفة زي المشي','نضّفي سنانك واعملي كشف أسنان لو محتاجة'],
+ 11:['زودي البروتين: فراخ، سمك مطبوخ كويس، بقوليات','اشربي ٨-١٠ كوبايات مية','ما تستحميش بمية سخنة أوي'],
+ 12:['اعرفي معاد سونار الشفافية','ابدئي ترطبي البطن والجلد','ابعدي عن الأسماك اللي فيها زئبق عالي زي سمك القرش والتونة الكبيرة'],
+ 13:['استغلي الطاقة في المشي والحركة','ابدئي تفكري في ميزانية البيبي','خلي الأكل الصحي عادة'],
+ 14:['جربي رياضة الحوامل أو اليوجا الخفيفة','البسي جزمة مريحة','افتكري الكالسيوم: لبن وزبادي وجبنة'],
+ 15:['استخدمي فرشاة سنان ناعمة','بخاخ ملح للأنف بيساعد في الاحتقان','كُلي أكل غني بالحديد مع فيتامين سي'],
+ 16:['نامي على جنبك الشمال لو مريحك','مخدة حمل بتفرق في النوم','قعدتك مستقيمة عشان الضهر'],
+ 17:['البسي هدوم قطن خفيفة','اشربي مية أكتر في الحر','وجبات صغيرة عشان الحرقان'],
+ 18:['قومي من النوم أو القعدة بالراحة','اعملي إطالة لسمانة الرجل قبل النوم','كُلي موز ومكسرات للمغنيسيوم'],
+ 19:['رطبي البطن والوركين كل يوم','كلمي البيبي وشغليله موسيقى','ابدئي تتعودي على حركته'],
+ 20:['احجزي السونار التفصيلي','ارفعي رجليكي على مخدة وانتي قاعدة','اتمشي يومياً ٢٠-٣٠ دقيقة'],
+ 21:['ما تقفيش أو تقعدي فترة طويلة من غير حركة','البسي شراب ضاغط لو عندك دوالي','قللي السكريات'],
+ 22:['قللي الملح عشان التورم','نامي ورجليكي مرفوعة شوية','ابدئي تختاري مستشفى الولادة'],
+ 23:['اعرفي علامات الولادة المبكرة','دوّني المهام عشان النسيان','ألياف ومية كتير للإمساك'],
+ 24:['اعملي تحليل السكر في ميعاده','ما تهرشيش جامد في البطن، رطبي بدل كده','ريحي إيدك لو بتنمّل'],
+ 25:['ما تنميش بعد الأكل على طول','ارفعي راسك بمخدة زيادة','اشربي مية وكُلي ألياف للبواسير'],
+ 26:['اتعلمي تمارين التنفس','اشربي مية كفاية عشان الصداع','ابعدي عن المسكنات من غير استشارة'],
+ 27:['ابدئي كورس تجهيز للولادة لو متاح','قسمي يومك لفترات راحة','فكري في خطة الرضاعة'],
+ 28:['ابدئي عد الركلات كل يوم','اسألي على حقنة Anti-D لو فصيلتك سالبة','زيارات الدكتور بتبقى كل أسبوعين'],
+ 29:['كُلي أكل غني بالكالسيوم','اتحركي بالراحة','ارتاحي على جنبك'],
+ 30:['اكتبي خطة الولادة','اتكلمي مع جوزك عن مخاوفك','نامي كفاية'],
+ 31:['اتعلمي الفرق بين براكستون هيكس والطلق الحقيقي','حطي فوط صدر لو في تسريب','جربي النوم نص قاعدة'],
+ 32:['وجبات صغيرة كتير','اعملي سونار النمو','جهزي أوضة البيبي'],
+ 33:['احفظي رقم الدكتور والمستشفى','جهزي ورق المستشفى','دش دافي بيريح الضهر'],
+ 34:['ابدئي تجهزي شنطة الولادة','بلّغي الدكتور فوراً لو الزغللة مع صداع شديد','ارتاحي كتير'],
+ 35:['اعملي مسحة GBS','اتمرني على تمارين التنفس','اعرفي طريق المستشفى'],
+ 36:['زيارات الدكتور كل أسبوع','الشنطة جنب الباب','اتعلمي أساسيات الرضاعة'],
+ 37:['اعرفي إمتى تروحي المستشفى','ما تبعديش عن البيت كتير','كُلي خفيف ومغذي'],
+ 38:['ريحي واقعدي رجليكي مرفوعة','اطبخي وخزّني أكل لبعد الولادة','اشربي مية كتير'],
+ 39:['تابعي حركة البيبي كل يوم','خليكي هادية وقريبة من التليفون','اتمشي لو الدكتور موافق'],
+ 40:['ميعاد الولادة تقديري فما تقلقيش','روحي المستشفى لو نزلت مية أو دم أو طلق منتظم','تابعي الحركة'],
+ 41:['تابعي مع الدكتور على طول','اسألي على المتابعة ومراقبة البيبي','ارتاحي'],
+ 42:['التزمي بخطة الدكتور','روحي المستشفى لو الحركة قلت']
+};
+const NUTRITION = [
+ ['🥬 الأكل اللي يفيدك',['خضار وفاكهة بألوان مختلفة كل يوم','بروتين: فراخ، لحمة، سمك مطبوخ كويس، بيض مطبوخ، فول وعدس','ألبان: لبن، زبادي، جبنة مبسترة للكالسيوم','نشويات كاملة: عيش بلدي، شوفان، رز بني','دهون صحية: زيت زيتون، مكسرات، أفوكادو']],
+ ['🩸 الحديد وحمض الفوليك',['الحديد في اللحمة الحمرا والكبدة (بكميات معتدلة) والسبانخ والعدس','كُلي الحديد مع فيتامين سي (برتقال، جوافة، فلفل) عشان يتمتص أحسن','ما تشربيش شاي أو قهوة مع الأكل أو مع قرص الحديد','الفوليك في الخضار الورقي والبقوليات والبرتقال']],
+ ['🚫 ابعدي عن',['اللحمة والفراخ والبيض النيين أو مش مستويين كويس','الجبن واللبن غير المبستر','السوشي والسمك النيء','السمك اللي فيه زئبق عالي (القرش، أبو سيف، الماكريل الملكي)','الكحول بكل أنواعه','الكافيين الكتير (أكتر من ٢٠٠ مجم = حوالي كوبايتين قهوة)','الأعشاب والمشروبات العشبية من غير استشارة الدكتور']],
+ ['💧 المية والسوايل',['٨-١٠ كوبايات مية في اليوم','زودي المية في الحر ومع الإمساك','قللي المياه الغازية والعصاير المحلاة']],
+ ['⚖️ زيادة الوزن الطبيعية',['الثلث الأول: زيادة قليلة (حوالي ١-٢ كجم)','بعد كده حوالي نص كيلو في الأسبوع','الإجمالي بيختلف حسب وزنك قبل الحمل، والدكتور يحددلك المناسب','مش محتاجة «تاكلي لاتنين»، الزيادة حوالي ٣٠٠ سعر حراري في اليوم في الثلث التاني والتالت']]
+];
+const CHANGES = [
+ ['🤢 الغثيان والترجيع','وجبات صغيرة كل ساعتين، بسكوت ناشف الصبح، زنجبيل، وابعدي عن الروايح القوية. لو مش قادرة تشربي مية أو بترجعي كل حاجة كلمي الدكتور.'],
+ ['🔥 الحرقان','كُلي كميات صغيرة، ما تنميش بعد الأكل بساعتين، ارفعي راسك بالمخدات، وقللي الحراق والدسم والقهوة.'],
+ ['🚽 الإمساك','ألياف كتير (خضار، فاكهة، شوفان)، مية كتير، ومشي يومي. اسألي الدكتور قبل أي ملين.'],
+ ['🦵 تقلصات الرجل','إطالة لسمانة الرجل قبل النوم، مية كفاية، وأكل فيه مغنيسيوم وكالسيوم.'],
+ ['🦶 تورم القدمين','ارفعي رجليكي، قللي الملح، ما تقفيش كتير. لو التورم مفاجئ في الوش والإيد مع صداع كلمي الدكتور فوراً.'],
+ ['🔙 ألم الضهر','قعدة مستقيمة، جزمة من غير كعب، مخدة بين الركب وانتي نايمة، ودش دافي.'],
+ ['😴 الأرق','نامي على جنبك بمخدة حمل، روتين ثابت قبل النوم، وقللي الموبايل والسوايل قبل النوم.'],
+ ['🚻 كثرة التبول','طبيعي جداً. ما تقلليش المية، بس قلليها قبل النوم بساعة. لو فيه حرقان أو ألم ممكن تكون التهاب، كلمي الدكتور.'],
+ ['🤕 الصداع','راحة، مية، أكل في مواعيده. الباراسيتامول عادة آمن بس اسألي الدكتور. الصداع الشديد في آخر الحمل لازم يتكشف عليه.'],
+ ['🌀 الدوخة','قومي بالراحة، ما تطوليش من غير أكل، واشربي مية.'],
+ ['🧴 علامات التمدد والحكة','رطبي الجلد كل يوم. الحكة الشديدة في الكفوف والرجلين بالليل لازم تبلّغي بيها الدكتور.'],
+ ['🩸 نزيف اللثة والأنف','فرشاة ناعمة، خيط أسنان، بخاخ ملح للأنف، ومرطب للجو لو جاف.'],
+ ['😮‍💨 ضيق التنفس','قعدة مستقيمة ومخدة زيادة. ضيق مفاجئ أو مع ألم في الصدر = طوارئ.'],
+ ['💭 تقلب المزاج والقلق','اتكلمي مع جوزك وحد قريب، اتمشي، ونامي كفاية. لو الحزن مستمر أكتر من أسبوعين اتكلمي مع الدكتور.']
+];
+const WARN = ['نزيف من المهبل','نزول مية أو سائل مستمر','ألم شديد في البطن أو تقلصات مستمرة','صداع شديد مع زغللة أو تورم مفاجئ في الوش والإيدين','سخونية ٣٨ أو أكتر','حركة البيبي قلت أو وقفت (بعد الأسبوع ٢٨)','ترجيع شديد ومش قادرة تشربي','حرقان أو ألم شديد في البول','طلق منتظم قبل الأسبوع ٣٧','ضيق تنفس مفاجئ أو ألم في الصدر','ألم وتورم في سمانة رجل واحدة','دوخة شديدة أو إغماء'];
+
 /* ---------- Helpers ---------- */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -499,6 +685,8 @@ function render(){
     S.lastWeekSeen = wk; save();
   }
   renderWeek(selWeek || wk, wk);
+  renderInfo(p);
+  if (!$('#v-page').hidden) renderPage();
 
   $('#homeDoses').innerHTML = doses.length ? doses.map(x => doseHTML(x, ymd(today0()))).join('') : `<div class="empty">مفيش أدوية النهارده. ضيفي الفيتامينات من صفحة الأدوية.</div>`;
   $('#todayDoses').innerHTML = doses.length ? doses.map(x => doseHTML(x, ymd(today0()))).join('') : `<div class="empty">مفيش جرعات النهارده.</div>`;
@@ -534,14 +722,79 @@ function renderWeek(w, cur){
   $('#tipText').textContent = info[4];
   const bar = $('#weekbar');
   if (!bar.childElementCount){
-    bar.innerHTML = Array.from({length:42},(_,i)=>`<button type="button" data-week="${i+1}">${ar(i+1)}</button>`).join('');
+    bar.innerHTML = Array.from({length:42},(_,i)=>`<button type="button" data-week="${i+1}"><span class="e">${WEEKS[i+1][0]}</span>أسبوع ${ar(i+1)}</button>`).join('');
   }
+  $('#lnkSym').textContent = `أعراض الأسبوع ${ar(w)}`;
+  $('#lnkTips').textContent = `نصائح الأسبوع ${ar(w)}`;
   $$('#weekbar button').forEach(b => { b.classList.toggle('cur', +b.dataset.week === cur); b.classList.toggle('sel', +b.dataset.week === w && w !== cur); });
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-week]'); if (!b) return;
   selWeek = +b.dataset.week; renderWeek(selWeek, preg().week);
 });
+/* ---------- Pregnancy details grid ---------- */
+const ORD = ['الأول','التاني','التالت','الرابع','الخامس','السادس','السابع','التامن','التاسع'];
+function season(d){ const m = d.getMonth(); return m===11||m<2 ? 'الشتاء ❄️' : m<5 ? 'الربيع 🌷' : m<8 ? 'الصيف ☀️' : 'الخريف 🍂'; }
+function renderInfo(p){
+  const lmp = parse(S.lmp);
+  let hijri = '—';
+  try { hijri = p.due.toLocaleDateString('ar-SA-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}); } catch(_){}
+  $('#iGreg').textContent = p.due.toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'});
+  $('#iHijri').textContent = hijri;
+  $('#iWeek').textContent = `${ar(Math.max(0,p.w))} أسبوع و${ar(Math.max(0,p.d))} يوم`;
+  $('#iMonth').textContent = `الشهر ${ORD[Math.min(8, Math.max(0, Math.floor(p.days/30.44)))]}`;
+  $('#iLeft').textContent = p.left > 0 ? `${ar(Math.floor(p.left/7))} أسبوع و${ar(p.left%7)} يوم` : 'وصلنا 💗';
+  $('#iStart').textContent = lmp.toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'});
+  $('#iDay').textContent = p.due.toLocaleDateString('ar-EG',{weekday:'long'});
+  $('#iSeason').textContent = season(p.due);
+  $('#iBar').style.width = p.pct + '%';
+  $('#iFrom').textContent = fmtShort(lmp); $('#iTo').textContent = fmtShort(p.due); $('#iPct').textContent = ar(p.pct) + '٪';
+}
+
+/* ---------- Guide pages ---------- */
+let curPage = 'symptoms';
+document.addEventListener('click', e => { const b = e.target.closest('[data-page]'); if (b){ curPage = b.dataset.page; go('page'); } });
+const ul = items => `<ul class="blist">${items.map(t=>`<li><span>${t}</span></li>`).join('')}</ul>`;
+function renderPage(){
+  const cur = preg().week, w = selWeek || cur, info = WEEKS[w];
+  const weekNav = `<div class="weeknav"><button class="btn-ghost btn-sm" data-wstep="-1" ${w<=1?'disabled':''}>→ الأسبوع ${ar(Math.max(1,w-1))}</button><button class="btn-ghost btn-sm" data-wstep="1" ${w>=42?'disabled':''}>الأسبوع ${ar(Math.min(42,w+1))} ←</button></div>`;
+  const head = `<div class="card baby"><div class="fruit">${info[0]}</div><div class="stack" style="gap:2px;min-width:0"><b>الأسبوع ${ar(w)} ${w===cur?'<span class="chip rose">الأسبوع الحالي</span>':''}</b><span class="muted">${trimester(w)} · البيبي قد ${info[1]}</span></div></div>`;
+  let title = '', body = '';
+  if (curPage === 'symptoms'){
+    title = `أعراض الأسبوع ${ar(w)}`;
+    body = head + `<section class="card stack"><h2>إيه اللي ممكن تحسي بيه</h2>${ul(SYM[w])}</section><section class="card stack"><h2>البيبي الأسبوع ده</h2><p>${info[3]}</p>${info[2]?`<p class="muted">الحجم التقريبي: ${info[2]}</p>`:''}</section><p class="muted">مش لازم كل الأعراض تحصل، وكل حمل مختلف عن التاني.</p>` + weekNav;
+  } else if (curPage === 'tips'){
+    title = `نصائح الأسبوع ${ar(w)}`;
+    body = head + `<section class="card stack"><h2>نصائح ليكي</h2>${ul([info[4], ...TIPS[w]])}</section>` + weekNav;
+  } else if (curPage === 'nutrition'){
+    title = 'التغذية الصحية أثناء الحمل';
+    body = NUTRITION.map(([h,items]) => `<section class="card stack"><h2>${h}</h2>${ul(items)}</section>`).join('');
+  } else if (curPage === 'changes'){
+    title = 'تغيرات الحمل والتعامل معها';
+    body = `<section class="card">${CHANGES.map(([h,t]) => `<div class="item qa"><div class="body"><h3>${h}</h3><p>${t}</p></div></div>`).join('')}</section>`;
+  } else if (curPage === 'warning'){
+    title = 'علامات لازم تكلمي فيها الدكتور';
+    body = `<div class="banner rose">لو حصلت أي علامة من دول كلمي الدكتور فوراً أو روحي الطوارئ. ما تستنيش.</div><section class="card">${ul(WARN)}</section>`;
+  }
+  $('#pgTitle').textContent = title;
+  $('#pgBody').innerHTML = body;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-wstep]'); if (!b) return;
+  selWeek = Math.min(42, Math.max(1, (selWeek || preg().week) + +b.dataset.wstep));
+  renderWeek(selWeek, preg().week); renderPage(); window.scrollTo(0,0);
+});
+
+/* ---------- Theme ---------- */
+function applyTheme(t){
+  if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); else document.documentElement.removeAttribute('data-theme');
+  $$('[data-theme-set]').forEach(b => b.setAttribute('aria-pressed', b.dataset.themeSet === (t||'auto')));
+  const dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.querySelector('meta[name=theme-color]').content = dark ? '#18141A' : '#C2496E';
+}
+$$('[data-theme-set]').forEach(b => b.addEventListener('click', () => { try{ localStorage.setItem('hamly-theme', b.dataset.themeSet); }catch(_){} applyTheme(b.dataset.themeSet); }));
+try { applyTheme(localStorage.getItem('hamly-theme') || 'auto'); } catch(_){ applyTheme('auto'); }
+
 let weekbarScrolled = false;
 function scrollWeekbar(){ if (weekbarScrolled) return; const c = $('#weekbar .cur'); if (c){ c.scrollIntoView({inline:'center',block:'nearest'}); weekbarScrolled = true; } }
 
