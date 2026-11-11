@@ -1,4 +1,4 @@
-const CACHE = 'hamly-v4';
+const CACHE = 'hamly-v5';
 const FILES = ['./', './index.html', './i18n-en.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './badge.png'];
 
 self.addEventListener('install', e => {

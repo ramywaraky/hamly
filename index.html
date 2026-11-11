@@ -19,19 +19,19 @@
 /* Layout: one-column phone app, home card on top, bottom tab bar. Soft rose + sage on warm white. */
 :root{
   --bg:#FBF6F7; --surface:#FFFFFF; --ink:#2A2230; --muted:#7A6E78; --line:#EEE3E7;
-  --rose:#C2496E; --rose-soft:#F8E3EA; --sage:#4F8C7E; --sage-soft:#E3F0EC; --warn:#B7791F;
+  --rose:#C2496E; --rose-soft:#F8E3EA; --rose-mid:#EBA3B8; --gold:#D9A441; --skin:#F6C9B5; --skin-dk:#E8A88F; --sage:#4F8C7E; --sage-soft:#E3F0EC; --warn:#B7791F;
   --display:"Alexandria","IBM Plex Sans Arabic",system-ui,sans-serif;
   --body:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#18141A; --surface:#231D25; --ink:#F2EAF0; --muted:#A898A4; --line:#352C37;
-  --rose:#EC7C9E; --rose-soft:#3A2230; --sage:#7CC2B1; --sage-soft:#1F3330; --warn:#E3B05C;
+  --rose:#EC7C9E; --rose-soft:#3A2230; --rose-mid:#7A3A52; --gold:#E8BD63; --skin:#E8B39C; --skin-dk:#C98A72; --sage:#7CC2B1; --sage-soft:#1F3330; --warn:#E3B05C;
   color-scheme:dark;
 }}
 :root[data-theme="dark"]{
   --bg:#18141A; --surface:#231D25; --ink:#F2EAF0; --muted:#A898A4; --line:#352C37;
-  --rose:#EC7C9E; --rose-soft:#3A2230; --sage:#7CC2B1; --sage-soft:#1F3330; --warn:#E3B05C;
+  --rose:#EC7C9E; --rose-soft:#3A2230; --rose-mid:#7A3A52; --gold:#E8BD63; --skin:#E8B39C; --skin-dk:#C98A72; --sage:#7CC2B1; --sage-soft:#1F3330; --warn:#E3B05C;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -122,6 +122,21 @@ h2.sect{font-size:1rem;color:var(--rose);margin-top:10px;margin-bottom:-4px}
 .iconseg .lg{font-family:var(--display);font-size:1.3rem;line-height:28px;height:28px}
 [dir="ltr"] .link .arr{transform:scaleX(-1)}
 .iconseg button[aria-pressed="true"]{background:var(--rose-soft);color:var(--rose);border-color:var(--rose)}
+.journey{background:linear-gradient(170deg,var(--rose-soft),var(--surface) 55%);border:1px solid var(--line);border-radius:24px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.journey #jRing{width:100%;max-width:320px;height:auto;margin:0 auto}
+.journey #jLine{width:100%;height:auto}
+.journey .center{text-align:center}
+.nav{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--rose);background:var(--surface);color:var(--rose);font-size:1.2rem;padding:0;display:flex;align-items:center;justify-content:center;flex:none}
+.jnext{flex:1;min-width:0;display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:8px 12px}
+.jnext .ic{font-size:1.6rem;flex:none}
+.jnext b{font-family:var(--display)}
+.meters{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.meter{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 12px;min-width:0}
+.meter span{font-size:.75rem;color:var(--muted)}
+.meter b{display:block;font-family:var(--display);font-size:1.1rem;font-variant-numeric:tabular-nums}
+.mbar{height:8px;border-radius:99px;background:var(--line);margin-top:6px;overflow:hidden}
+.mbar i{display:block;height:100%;background:var(--rose);border-radius:99px;transition:width .5s}
+.jmeta{border-top:1px solid var(--line);padding-top:8px;text-align:center;display:flex;flex-direction:column;gap:2px}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .seg button{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--rose);color:#fff;border-color:var(--rose)}
@@ -202,16 +217,21 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
 
     <div id="weekBanner" class="banner rose" hidden></div>
 
-    <section class="hero">
-      <div class="ring" aria-hidden="true">
-        <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="10"/><circle class="fg" id="ringFg" cx="60" cy="60" r="52" fill="none" stroke="var(--rose)" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg>
-        <div class="num"><b id="ringWeek">12</b><span>أسبوع</span></div>
+    <section class="journey">
+      <p class="center" id="jMonth" style="font-family:var(--display);color:var(--rose);margin:0"></p>
+      <svg id="jRing" viewBox="0 0 300 300" aria-hidden="true"></svg>
+      <svg id="jLine" viewBox="0 0 320 84" aria-hidden="true"></svg>
+      <div class="row" style="flex-wrap:nowrap">
+        <button type="button" class="nav" data-jstep="-1" aria-label="الأسبوع اللي قبله">→</button>
+        <div class="jnext" id="jNext"></div>
+        <button type="button" class="nav" data-jstep="1" aria-label="الأسبوع اللي بعده">←</button>
       </div>
-      <div class="stack" style="gap:6px;min-width:0">
-        <p id="gaText" style="font-weight:600">١١ أسبوع و٣ أيام</p>
-        <p class="muted" id="dueText">ميعاد الولادة المتوقع: —</p>
-        <p class="muted" id="leftText">فاضل — يوم</p>
+      <div class="center"><button type="button" class="btn-ghost btn-sm" id="jBack" hidden>ارجعي للأسبوع الحالي</button></div>
+      <div class="meters">
+        <div class="meter"><span>📏 طول البيبي</span><b id="jLen"></b><div class="mbar"><i id="jLenBar"></i></div></div>
+        <div class="meter"><span>⚖️ وزن البيبي</span><b id="jWt"></b><div class="mbar"><i id="jWtBar" style="background:var(--sage)"></i></div></div>
       </div>
+      <div class="jmeta"><p id="gaText" style="font-weight:600"></p><p class="muted" id="dueText"></p><p class="muted" id="leftText"></p></div>
     </section>
 
     <div class="stats">
@@ -787,8 +807,6 @@ function render(){
   $('#hello').textContent = (h < 12 ? tr('صباح الخير','Good morning') : tr('مساء الخير','Good evening')) + (S.name ? tr(` يا ${S.name}`, `, ${S.name}`) : '');
   $('#homeTitle').textContent = p.days < 0 ? tr('التاريخ لسه ما جاش','That date hasn\'t come yet') : tr(`انتي في الأسبوع ${ar(wk)}`, `You're in week ${wk}`);
   $('#trimChip').textContent = trimester(wk);
-  $('#ringWeek').textContent = ar(wk);
-  $('#ringFg').style.strokeDashoffset = 326.7 * (1 - p.pct/100);
   $('#gaText').textContent = tr(`${ar(p.w)} أسبوع و${ar(p.d)} ${p.d===1?'يوم':'أيام'}`, `${p.w} weeks and ${p.d} day${p.d===1?'':'s'}`);
   $('#dueText').textContent = tr('ميعاد الولادة المتوقع: ','Due date: ') + fmtDate(p.due);
   $('#leftText').textContent = p.left > 0 ? tr(`فاضل ${ar(p.left)} يوم (حوالي ${ar(Math.ceil(p.left/7))} أسبوع)`, `${p.left} days to go (about ${Math.ceil(p.left/7)} weeks)`) : tr('وصلنا لميعاد الولادة المتوقع 💗','You\'ve reached your due date 💗');
@@ -838,6 +856,7 @@ function render(){
 let selWeek = 0;
 function renderWeek(w, cur){
   const info = WEEKS[w];
+  drawJourney(w, cur);
   $('#babyWeekLbl').textContent = w === cur ? tr('الأسبوع ده','This week') : `${tr('الأسبوع','Week')} ${ar(w)}`;
   $('#fruit').textContent = info[0];
   $('#fruitName').textContent = tr('قد ','Size of ') + info[1];
@@ -855,6 +874,90 @@ function renderWeek(w, cur){
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-week]'); if (!b) return;
   selWeek = +b.dataset.week; renderWeek(selWeek, preg().week);
+});
+/* ---------- Home infographic: 40-week ring + journey line ---------- */
+const LEN = {4:.1,5:.2,6:.6,7:1,8:1.6,9:2.3,10:3,11:4,12:5.5,13:7,14:8.5,15:10,16:12,17:13,18:14,19:15,20:25,21:27,22:28,23:29,24:30,25:34,26:35,27:36,28:37,29:38,30:39,31:41,32:42,33:44,34:45,35:46,36:47,37:48,38:49,39:50,40:51,41:52,42:52};
+const WT = {8:1,9:2,10:4,11:7,12:14,13:23,14:43,15:70,16:100,17:140,18:190,19:240,20:300,21:360,22:430,23:500,24:600,25:660,26:760,27:870,28:1000,29:1150,30:1300,31:1500,32:1700,33:1900,34:2100,35:2400,36:2600,37:2900,38:3100,39:3300,40:3400,41:3600,42:3700};
+const JOURNEY = [[6,'💓','أول نبض','First heartbeat'],[12,'✋','أول حركة','First movements'],[20,'🌗','نص المشوار','Halfway there'],[24,'👂','بيسمع صوتك','Hears your voice'],[28,'👣','عدّ الركلات','Kick counting'],[34,'🫁','الرئة قربت تكمل','Lungs nearly ready'],[37,'🌟','مكتمل','Full term'],[40,'🎉','الولادة','Birth']];
+const LINE_MS = [[6,''],[12,'✋ أول حركة|✋ First moves'],[20,''],[28,'👣 عدّ الركلات|👣 Kick count'],[37,''],[40,'🎉 الولادة|🎉 Birth']];
+const triCol = t => ['var(--rose)','var(--gold)','var(--sage)'][t];
+const triOf = w => w <= 13 ? 0 : w <= 27 ? 1 : 2;
+function fetusSVG(cx, cy, k, w){
+  if (w < 8){ const r = (4 + w*1.6)*k*1.6; return `<ellipse cx="${cx}" cy="${cy}" rx="${r}" ry="${r*.7}" fill="var(--skin)" transform="rotate(-30 ${cx} ${cy})"/><circle cx="${cx - r*.45}" cy="${cy - r*.25}" r="${r*.45}" fill="var(--skin)"/>`; }
+  return `<g transform="translate(${cx} ${cy}) scale(${k}) translate(-50 -50)">
+    <path d="M58 30 C82 30 92 52 86 72 C80 92 56 98 40 88 C30 82 28 70 36 62 C44 54 58 60 56 70" fill="var(--skin)" stroke="var(--skin-dk)" stroke-width="1.5"/>
+    <circle cx="44" cy="34" r="20" fill="var(--skin)" stroke="var(--skin-dk)" stroke-width="1.5"/>
+    <path d="M36 36 q4 3 8 0" stroke="var(--skin-dk)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <circle cx="51" cy="30" r="2" fill="var(--skin-dk)"/>
+    <path d="M60 56 q10 -4 12 6" stroke="var(--skin-dk)" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M70 82 q-6 10 -18 8" stroke="var(--skin-dk)" stroke-width="6" fill="none" stroke-linecap="round"/>
+  </g>`;
+}
+const lenTxt = w => LEN[w] ? `${ar(LEN[w])} ${tr('سم','cm')}` : tr('أقل من ١ مم','under 1 mm');
+const wtTxt = w => WT[w] ? (WT[w] >= 1000 ? `${ar((WT[w]/1000).toFixed(1))} ${tr('كجم','kg')}` : `${ar(WT[w])} ${tr('جم','g')}`) : tr('أقل من ١ جم','under 1 g');
+function drawJourney(w, cur){
+  const p = preg(), isCur = w === cur, W = Math.min(40, w);
+  const days = isCur ? Math.max(0, p.days) : (w-1)*7;
+  const mi = Math.min(8, Math.max(0, Math.floor(days/30.44)));
+  // header
+  const wl = Math.max(0, 40 - w);
+  $('#jMonth').textContent = tr(`الشهر ${ORD[mi]}`, `${ORD[mi]} month`) + ' · ' + (wl ? tr(`فاضل ${ar(wl)} أسبوع`, `${wl} weeks to go`) : tr('وصلنا 💗','Due now 💗'));
+  // ring
+  const cx = 150, cy = 150, R = 104, dir = EN ? 1 : -1;
+  const pos = (i, rr) => { const a = -Math.PI/2 + dir * (i-1)/40 * 2*Math.PI; return [cx + rr*Math.cos(a), cy + rr*Math.sin(a)]; };
+  let g = `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--line)" stroke-width="1" stroke-dasharray="2 4"/>`;
+  for (let i = 1; i <= 40; i++){
+    if (JOURNEY.some(j => j[0] === i)) continue;
+    const [x, y] = pos(i, R), on = i <= W, now = i === W;
+    g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${now ? 9 : 5}" fill="${on ? triCol(triOf(i)) : 'var(--surface)'}" stroke="${on ? 'none' : 'var(--line)'}" stroke-width="1.5"${now ? ' style="filter:drop-shadow(0 0 6px var(--rose))"' : ''}/>`;
+  }
+  JOURNEY.forEach(([mw, ic]) => {
+    const [x, y] = pos(mw, R), ok = W >= mw, now = W === mw;
+    g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${now ? 17 : 14}" fill="${ok ? 'var(--surface)' : 'var(--bg)'}" stroke="${ok ? triCol(triOf(mw)) : 'var(--line)'}" stroke-width="${now ? 3 : 2}"/><text x="${x.toFixed(1)}" y="${(y+5).toFixed(1)}" font-size="${now ? 16 : 13}" text-anchor="middle" opacity="${ok ? 1 : .4}">${ic}</text>`;
+  });
+  [1,10,20,30].forEach(i => { const [x, y] = pos(i, R - 24); g += `<text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" font-size="10" text-anchor="middle" fill="var(--muted)">${ar(i)}</text>`; });
+  const sz = Math.min(1, days/280);
+  g += `<circle cx="${cx}" cy="${cy}" r="66" fill="var(--rose-soft)"/>
+        <circle cx="${cx}" cy="${cy-14}" r="${18 + 22*sz}" fill="var(--surface)" opacity=".85"/>
+        ${fetusSVG(cx, cy-14, .32 + .38*sz, w)}
+        <text x="${cx}" y="${cy+40}" font-size="24" text-anchor="middle" fill="var(--rose)" font-family="Alexandria, sans-serif" font-weight="700">${ar(w)}</text>
+        <text x="${cx}" y="${cy+55}" font-size="10" text-anchor="middle" fill="var(--muted)">${tr('من ٤٠ أسبوع','of 40 weeks')}</text>`;
+  $('#jRing').innerHTML = g;
+  // journey line (labels only under the line)
+  const x0 = 22, x1 = 298, ly = 26, X = v => EN ? x0 + (x1-x0)*(v/40) : x1 - (x1-x0)*(v/40);
+  let L = '';
+  [[0,13],[13,27],[27,40]].forEach(([a,b],i) => {
+    L += `<line x1="${X(a)}" y1="${ly}" x2="${X(b)}" y2="${ly}" stroke="${triCol(i)}" stroke-width="10" stroke-linecap="round" opacity=".25"/>`;
+    const e = Math.min(b, W); if (e > a) L += `<line x1="${X(a)}" y1="${ly}" x2="${X(e)}" y2="${ly}" stroke="${triCol(i)}" stroke-width="10" stroke-linecap="round"/>`;
+  });
+  LINE_MS.forEach(([mw, lbl]) => {
+    const ok = W >= mw;
+    L += `<circle cx="${X(mw)}" cy="${ly}" r="7" fill="${ok ? 'var(--surface)' : 'var(--bg)'}" stroke="${ok ? triCol(triOf(mw)) : 'var(--line)'}" stroke-width="3"/>`;
+    if (lbl){ const [la, le] = lbl.split('|'); L += `<text x="${X(mw)}" y="${ly+30}" font-size="11" text-anchor="middle" fill="${ok ? 'var(--ink)' : 'var(--muted)'}">${tr(la, le)}</text>`; }
+  });
+  L += `<g transform="translate(${X(W)} ${ly})"><circle r="16" fill="var(--rose)"/><text y="6" font-size="16" text-anchor="middle">${WEEKS[w][0]}</text></g>`;
+  L += `<text x="${X(0)}" y="${ly+52}" font-size="10" fill="var(--muted)" text-anchor="middle">${ar(1)}</text><text x="${X(40)}" y="${ly+52}" font-size="10" fill="var(--muted)" text-anchor="middle">${ar(40)}</text>`;
+  $('#jLine').innerHTML = L;
+  // next milestone
+  const here = JOURNEY.find(j => j[0] === w), nx = JOURNEY.find(j => j[0] > w);
+  $('#jNext').innerHTML = here
+    ? `<span class="ic">${here[1]}</span><div><b>${tr(`وصلتي محطة «${here[2]}»!`, `You reached “${here[3]}”!`)}</b><div class="muted">${tr('الأسبوع ده','This week')}</div></div>`
+    : nx ? `<span class="ic">${nx[1]}</span><div style="min-width:0"><div class="muted">${tr('المحطة الجاية','Next milestone')}</div><b>${tr(nx[2], nx[3])}</b> <span class="muted">· ${tr(`بعد ${ar(nx[0]-w)} ${nx[0]-w === 1 ? 'أسبوع' : 'أسابيع'}`, `in ${nx[0]-w} week${nx[0]-w === 1 ? '' : 's'}`)}</span></div>`
+         : `<span class="ic">🎉</span><div><b>${tr('مبروك! وصلتي آخر محطة','Congratulations! You made it')}</b></div>`;
+  $('#jBack').hidden = isCur;
+  // size
+  $('#jLen').textContent = lenTxt(w); $('#jWt').textContent = wtTxt(w);
+  $('#jLenBar').style.width = ((LEN[w] || 0)/52*100) + '%';
+  $('#jWtBar').style.width = ((WT[w] || 0)/3700*100) + '%';
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-jstep]');
+  const back = e.target.closest('#jBack');
+  if (!b && !back) return;
+  const cur = preg().week;
+  selWeek = back ? 0 : Math.min(42, Math.max(1, (selWeek || cur) + +b.dataset.jstep));
+  renderWeek(selWeek || cur, cur);
+  const c = $('#weekbar .sel') || $('#weekbar .cur'); if (c) c.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
 });
 /* ---------- Pregnancy details grid ---------- */
 const ORD = EN ? ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th'] : ['الأول','التاني','التالت','الرابع','الخامس','السادس','السابع','التامن','التاسع'];
