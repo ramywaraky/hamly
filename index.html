@@ -11,7 +11,7 @@
 <script>try{var t=localStorage.getItem('hamly-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
 <style>
@@ -96,6 +96,21 @@ textarea{min-height:64px;resize:vertical}
 .pagehead button{background:var(--rose-soft);color:var(--rose);width:40px;height:40px;padding:0;font-size:1.2rem;flex:none}
 .weeknav{display:flex;justify-content:space-between;gap:10px}
 .qa h3{margin-bottom:4px}
+.themebtn{width:42px;height:42px;border-radius:50%;padding:0;font-size:1.25rem;background:var(--surface);border:1px solid var(--line);color:var(--ink);display:flex;align-items:center;justify-content:center}
+.bell{position:relative;color:var(--rose)}
+.bell .badge{position:absolute;top:-4px;inset-inline-end:-4px;min-width:20px;height:20px;border-radius:99px;background:#D93B5E;color:#fff;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 5px;border:2px solid var(--bg)}
+.notif{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:14px;background:var(--bg);border:1px solid var(--line)}
+.notif.unread{border-color:var(--rose);background:var(--rose-soft)}
+.notif .ic{font-size:1.4rem;flex:none}
+.moods{display:flex;gap:6px;justify-content:space-between}
+.moods button{flex:1;font-size:1.6rem;padding:8px 0;background:var(--bg);border:1px solid var(--line)}
+.moods button[aria-pressed="true"]{background:var(--rose-soft);border-color:var(--rose)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:var(--bg);color:var(--ink);border:1px solid var(--line);padding:6px 12px;border-radius:99px;font-size:.85rem;font-weight:500}
+.chips button[aria-pressed="true"]{background:var(--rose);color:#fff;border-color:var(--rose)}
+.callout{border-radius:14px;padding:12px 14px;background:var(--bg);border:1px solid var(--line)}
+.callout.bad{border-color:#C0392B;background:color-mix(in srgb,#C0392B 10%,var(--surface))}
+.callout.ok{border-color:var(--sage);background:var(--sage-soft)}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .seg button{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--rose);color:#fff;border-color:var(--rose)}
@@ -163,12 +178,15 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
 <!-- ============ HOME ============ -->
 <main class="wrap view" id="v-home" hidden>
   <div class="stack">
-    <div class="row between">
-      <div>
-        <p class="muted" id="hello">صباح الخير</p>
-        <h1 id="homeTitle">الأسبوع ١٢</h1>
+    <div class="stack" style="gap:4px">
+      <div class="row between" style="flex-wrap:nowrap">
+        <p class="muted" id="hello" style="min-width:0">صباح الخير</p>
+        <div class="row" style="gap:8px;flex-wrap:nowrap">
+        <button type="button" class="themebtn" id="themeToggle" aria-label="تغيير الوضع">🌙</button>
+        <button type="button" class="themebtn bell" data-page="notifs" aria-label="التنبيهات"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="badge" id="bellBadge" hidden>0</span></button>
+        </div>
       </div>
-      <span class="chip rose" id="trimChip">الثلث الأول</span>
+      <div class="row between"><h1 id="homeTitle">الأسبوع ١٢</h1><span class="chip rose" id="trimChip">الثلث الأول</span></div>
     </div>
 
     <div id="weekBanner" class="banner rose" hidden></div>
@@ -310,14 +328,37 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
   <div class="stack">
     <h1>أدوات</h1>
     <div class="subtabs" role="group">
-      <button type="button" data-sub="kicks" aria-pressed="true">عدّاد الركلات</button>
+      <button type="button" data-sub="diary" aria-pressed="true">يومياتي</button>
+      <button type="button" data-sub="kicks" aria-pressed="false">عدّاد الركلات</button>
       <button type="button" data-sub="contr" aria-pressed="false">مؤقت الطلق</button>
       <button type="button" data-sub="weight" aria-pressed="false">الوزن</button>
       <button type="button" data-sub="water" aria-pressed="false">المية</button>
       <button type="button" data-sub="bag" aria-pressed="false">شنطة الولادة</button>
     </div>
 
-    <section class="card stack sub" id="sub-kicks">
+    <form class="card stack sub" id="sub-diary">
+      <h2>يومياتي</h2>
+      <p class="muted">سجلي إحساسك وأعراضك كل يوم. لما تروحي للدكتور هتلاقي كل حاجة متسجلة قدامك.</p>
+      <label>اليوم<input id="dDate" type="date" required></label>
+      <div class="stack" style="gap:6px"><span class="muted">مزاجك النهارده</span>
+        <div class="moods" id="dMood"><button type="button" data-mood="1" aria-label="وحش">😣</button><button type="button" data-mood="2" aria-label="مش أحسن حاجة">😕</button><button type="button" data-mood="3" aria-label="عادي">😐</button><button type="button" data-mood="4" aria-label="كويس">🙂</button><button type="button" data-mood="5" aria-label="ممتاز">😍</button></div>
+      </div>
+      <div class="stack" style="gap:6px"><span class="muted">أعراض حسيتي بيها</span><div class="chips" id="dSym"></div></div>
+      <div class="grid2">
+        <label>الضغط (الكبير)<input id="dSys" type="number" min="60" max="220" inputmode="numeric" placeholder="١٢٠"></label>
+        <label>الضغط (الصغير)<input id="dDia" type="number" min="30" max="150" inputmode="numeric" placeholder="٨٠"></label>
+        <label>السكر (مجم/دل)<input id="dSugar" type="number" min="30" max="500" inputmode="numeric" placeholder="اختياري"></label>
+        <label>السكر كان
+          <select id="dSugarType"><option value="fasting">صايمة</option><option value="after">بعد الأكل بساعتين</option><option value="random">عشوائي</option></select>
+        </label>
+      </div>
+      <label>ملاحظات أو أسئلة للدكتور<textarea id="dNote" placeholder="مثلاً: حسيت بدوخة بعد الضهر…"></textarea></label>
+      <button type="submit">حفظ اليوم</button>
+      <div id="dWarn"></div>
+      <div id="dList"></div>
+    </form>
+
+    <section class="card stack sub" id="sub-kicks" hidden>
       <h2>عدّاد ركلات البيبي</h2>
       <p class="muted">من الأسبوع ٢٨: اختاري وقت البيبي بيبقى نشيط فيه، واضغطي مع كل حركة. المعتاد ١٠ حركات في أقل من ساعتين. لو الحركة قلّت عن العادي كلمي الدكتور.</p>
       <div class="kickcount" id="kickCount">0</div>
@@ -344,6 +385,7 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
         <button type="submit">سجّلي</button>
       </form>
       <p id="wSummary" class="muted"></p>
+      <div id="wAdvice"></div>
       <div id="wChart"></div>
       <div id="wList"></div>
     </section>
@@ -367,7 +409,7 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
 <!-- ============ SETTINGS ============ -->
 <main class="wrap view" id="v-settings" hidden>
   <div class="stack">
-    <h1>الإشعارات والإعدادات</h1>
+    <h1>حسابي والإعدادات</h1>
     <section class="card stack">
       <h2>شكل التطبيق</h2>
       <div class="seg" role="group" aria-label="الوضع">
@@ -391,11 +433,36 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
       <button class="btn-sage" id="icsAll">الكل في ملف واحد</button>
     </section>
     <form class="card stack" id="profileForm">
-      <h2>بيانات الحمل</h2>
-      <label>الاسم<input id="pName"></label>
+      <h2>👩 البروفايل</h2>
+      <div class="grid2">
+        <label>الاسم<input id="pName" autocomplete="given-name"></label>
+        <label>السن<input id="pAge" type="number" min="14" max="60" inputmode="numeric" placeholder="مثلاً ٢٨"></label>
+        <label>الطول (سم)<input id="pHeight" type="number" min="120" max="210" inputmode="numeric" placeholder="١٦٠"></label>
+        <label>الوزن قبل الحمل (كجم)<input id="pPreW" type="number" step="0.1" min="30" max="200" inputmode="decimal" placeholder="٦٠"></label>
+        <label>فصيلة الدم
+          <select id="pBlood"><option value="">مش عارفة</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select>
+        </label>
+        <label>ده أول حمل؟
+          <select id="pFirst"><option value="">—</option><option value="yes">أيوه</option><option value="no">لأ</option></select>
+        </label>
+      </div>
+      <h2 style="margin-top:6px">👶 البيبي</h2>
+      <div class="grid2">
+        <label>اسم البيبي (لو اخترتوه)<input id="pBaby"></label>
+        <label>النوع
+          <select id="pSex"><option value="">لسه مش عارفين</option><option value="boy">ولد 💙</option><option value="girl">بنت 💗</option></select>
+        </label>
+      </div>
       <label>أول يوم في آخر دورة<input id="pLmp" type="date" required></label>
       <p class="muted" id="pDue"></p>
-      <button type="submit">حفظ</button>
+      <h2 style="margin-top:6px">☎️ أرقام مهمة</h2>
+      <div class="grid2">
+        <label>اسم الدكتور<input id="pDoctor"></label>
+        <label>رقم الدكتور<input id="pDoctorPhone" type="tel" inputmode="tel"></label>
+        <label>المستشفى<input id="pHospital"></label>
+        <label>رقم للطوارئ (الزوج مثلاً)<input id="pEmergency" type="tel" inputmode="tel"></label>
+      </div>
+      <button type="submit">حفظ البروفايل</button>
     </form>
     <section class="card stack">
       <h2>نسخة احتياطية</h2>
@@ -411,7 +478,7 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
   <button data-go="meds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-45 12 12)"/><path d="M8.5 8.5l7 7"/></svg>الأدوية</button>
   <button data-go="appts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>المواعيد</button>
   <button data-go="tools"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.4-9.3-9A5.2 5.2 0 0 1 12 6.6 5.2 5.2 0 0 1 21.3 12C19 16.6 12 21 12 21z"/></svg>أدوات</button>
-  <button data-go="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>إشعارات</button>
+  <button data-go="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>حسابي</button>
 </nav>
 <div class="toast" id="toast" hidden></div>
 
@@ -609,7 +676,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 /* ---------- State ---------- */
 const KEY = 'hamly-v1';
 let S;
-function blank(){ return {name:'',lmp:null,meds:[],taken:{},appts:[],tests:{},bag:{},kicks:[],contr:[],weights:[],water:{},lastWeekSeen:0,notified:{}}; }
+function blank(){ return {name:'',lmp:null,profile:{},log:[],readNotifs:{},meds:[],taken:{},appts:[],tests:{},bag:{},kicks:[],contr:[],weights:[],water:{},lastWeekSeen:0,notified:{}}; }
 function load(){ try{ S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY)||'{}')); }catch(e){ S = blank(); } }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast('مقدرناش نحفظ، المساحة مليانة أو التخزين مقفول'); } }
 
@@ -631,6 +698,7 @@ function go(view){
   $$('.view').forEach(v => v.hidden = v.id !== 'v-'+view);
   $$('#tabs button').forEach(b => { if (b.dataset.go === view) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
   window.scrollTo(0,0);
+  if (view === 'settings') fillProfile();
   render();
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) go(b.dataset.go); });
@@ -708,7 +776,8 @@ function render(){
 
   $('#bagList').innerHTML = BAG.map((t,i)=>`<label class="item" style="flex-direction:row;color:var(--ink);font-size:1rem"><input type="checkbox" style="width:22px;height:22px" data-bag="${i}" ${S.bag[i]?'checked':''}><span class="body">${t}</span></label>`).join('');
 
-  renderKicks(); renderContr(); renderWeight(); renderWater(); renderSettings();
+  renderKicks(); renderContr(); renderWeight(); renderWater(); renderSettings(); renderDiary(); renderBell();
+  if (S.profile.baby) $('#fruitName').textContent = `${S.profile.baby} ${S.profile.sex==='girl'?'💗':S.profile.sex==='boy'?'💙':''} دلوقتي قد ${WEEKS[selWeek||wk][1]}`;
 }
 
 let selWeek = 0;
@@ -751,6 +820,34 @@ function renderInfo(p){
   $('#iFrom').textContent = fmtShort(lmp); $('#iTo').textContent = fmtShort(p.due); $('#iPct').textContent = ar(p.pct) + '٪';
 }
 
+/* ---------- Notification center ---------- */
+function notifItems(){
+  const now = new Date(), k = ymd(today0()), hm = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const tk = S.taken[k] || {}, out = [], wk = preg().week;
+  dosesFor(today0()).forEach(x => {
+    if (tk[x.key]) return;
+    const late = x.t <= hm;
+    out.push({id:'dose-'+k+x.key, icon:'💊', unread:late, title: late ? `ميعاد ${esc(x.m.name)} فات` : `${esc(x.m.name)} الساعة ${fmtTime(x.t)}`,
+      body: late ? `كان المفروض الساعة ${fmtTime(x.t)} — ${esc(x.m.dose||'')}` : esc(x.m.dose||'جرعة النهارده'),
+      action:`<button class="btn-sage btn-sm" data-take="${x.key}">خدتها</button>`});
+  });
+  upcomingAppts().forEach(a => {
+    const days = Math.round((parse(a.date) - today0())/DAY);
+    if (days <= 2){ const id = 'appt-'+a.id; out.push({id, readable:1, unread:!S.readNotifs[id], icon:'🩺', title: days<=0 ? `ميعادك النهارده: ${esc(a.title)}` : days===1 ? `بكرة: ${esc(a.title)}` : `بعد يومين: ${esc(a.title)}`, body:`الساعة ${fmtTime(a.time)}`}); }
+  });
+  const wid = 'week-'+wk;
+  out.push({id:wid, readable:1, unread:!S.readNotifs[wid], icon:'🎉', title:`انتي في الأسبوع ${ar(wk)}`, body:`البيبي دلوقتي قد ${WEEKS[wk][1]}. ${WEEKS[wk][4]}`, action:`<button class="btn-ghost btn-sm" data-page="tips">النصايح</button>`});
+  TESTS.forEach(([a,b,t],i) => { if (wk >= a && wk <= b && !S.tests[i]){ const id='test-'+i; out.push({id, readable:1, unread:!S.readNotifs[id], icon:'🧪', title:'فحص ميعاده دلوقتي', body:t, action:`<button class="btn-ghost btn-sm" data-go="appts">التفاصيل</button>`}); } });
+  if (wk >= 28 && !S.kicks.some(x => ymd(new Date(x.start)) === k)){ const id='kick-'+k; out.push({id, readable:1, unread:!S.readNotifs[id], icon:'👣', title:'ما عدّتيش ركلات البيبي النهارده', body:'خدي ساعة هادية وعدّي حركته.', action:`<button class="btn-ghost btn-sm" data-go="tools">عدّ</button>`}); }
+  if (now.getHours() >= 18 && !S.log.some(x => x.date === k)){ const id='diary-'+k; out.push({id, readable:1, unread:!S.readNotifs[id], icon:'📝', title:'سجلي يومك', body:'مزاجك وأعراضك النهارده.', action:`<button class="btn-ghost btn-sm" data-go="tools">سجلي</button>`}); }
+  return out.sort((a,b) => b.unread - a.unread);
+}
+function renderBell(){
+  const n = notifItems().filter(x => x.unread).length, b = $('#bellBadge');
+  b.hidden = !n; b.textContent = ar(n > 9 ? '9+' : n);
+  if ('setAppBadge' in navigator){ try { n ? navigator.setAppBadge(n) : navigator.clearAppBadge(); } catch(_){} }
+}
+
 /* ---------- Guide pages ---------- */
 let curPage = 'symptoms';
 document.addEventListener('click', e => { const b = e.target.closest('[data-page]'); if (b){ curPage = b.dataset.page; go('page'); } });
@@ -766,6 +863,12 @@ function renderPage(){
   } else if (curPage === 'tips'){
     title = `نصائح الأسبوع ${ar(w)}`;
     body = head + `<section class="card stack"><h2>نصائح ليكي</h2>${ul([info[4], ...TIPS[w]])}</section>` + weekNav;
+  } else if (curPage === 'notifs'){
+    title = 'التنبيهات';
+    const list = notifItems();
+    body = list.length ? `<div class="stack">${list.map(n => `<div class="notif ${n.unread?'unread':''}"><span class="ic">${n.icon}</span><div class="body" style="flex:1;min-width:0"><b>${n.title}</b><div class="muted">${n.body}</div></div>${n.action||''}</div>`).join('')}</div>` : `<div class="empty">مفيش تنبيهات دلوقتي 💗</div>`;
+    list.forEach(n => { if (n.readable) S.readNotifs[n.id] = 1; }); save();
+    setTimeout(renderBell, 0);
   } else if (curPage === 'nutrition'){
     title = 'التغذية الصحية أثناء الحمل';
     body = NUTRITION.map(([h,items]) => `<section class="card stack"><h2>${h}</h2>${ul(items)}</section>`).join('');
@@ -774,7 +877,9 @@ function renderPage(){
     body = `<section class="card">${CHANGES.map(([h,t]) => `<div class="item qa"><div class="body"><h3>${h}</h3><p>${t}</p></div></div>`).join('')}</section>`;
   } else if (curPage === 'warning'){
     title = 'علامات لازم تكلمي فيها الدكتور';
-    body = `<div class="banner rose">لو حصلت أي علامة من دول كلمي الدكتور فوراً أو روحي الطوارئ. ما تستنيش.</div><section class="card">${ul(WARN)}</section>`;
+    const P = S.profile, tel = n => `<a href="tel:${esc(n)}" style="color:var(--rose);font-weight:600;direction:ltr;unicode-bidi:embed">${esc(n)}</a>`;
+    const contacts = [P.doctorPhone && `<div class="item"><span>🩺</span><div class="body"><b>${esc(P.doctor||'الدكتور')}</b></div>${tel(P.doctorPhone)}</div>`, P.emergency && `<div class="item"><span>☎️</span><div class="body"><b>رقم الطوارئ</b></div>${tel(P.emergency)}</div>`, P.hospital && `<div class="item"><span>🏥</span><div class="body"><b>${esc(P.hospital)}</b></div></div>`].filter(Boolean).join('');
+    body = `<div class="banner rose">لو حصلت أي علامة من دول كلمي الدكتور فوراً أو روحي الطوارئ. ما تستنيش.</div>${contacts ? `<section class="card">${contacts}</section>` : `<button class="btn-ghost" data-go="settings">ضيفي رقم الدكتور ورقم الطوارئ</button>`}<section class="card">${ul(WARN)}</section>`;
   }
   $('#pgTitle').textContent = title;
   $('#pgBody').innerHTML = body;
@@ -791,7 +896,14 @@ function applyTheme(t){
   $$('[data-theme-set]').forEach(b => b.setAttribute('aria-pressed', b.dataset.themeSet === (t||'auto')));
   const dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
   document.querySelector('meta[name=theme-color]').content = dark ? '#18141A' : '#C2496E';
+  $('#themeToggle').textContent = dark ? '☀️' : '🌙';
+  $('#themeToggle').setAttribute('aria-label', dark ? 'الوضع الفاتح' : 'الوضع الغامق');
 }
+$('#themeToggle').addEventListener('click', () => {
+  const t = $('#themeToggle').textContent === '🌙' ? 'dark' : 'light';
+  try{ localStorage.setItem('hamly-theme', t); }catch(_){}
+  applyTheme(t); toast(t === 'dark' ? 'الوضع الغامق 🌙' : 'الوضع الفاتح ☀️');
+});
 $$('[data-theme-set]').forEach(b => b.addEventListener('click', () => { try{ localStorage.setItem('hamly-theme', b.dataset.themeSet); }catch(_){} applyTheme(b.dataset.themeSet); }));
 try { applyTheme(localStorage.getItem('hamly-theme') || 'auto'); } catch(_){ applyTheme('auto'); }
 
@@ -865,6 +977,48 @@ $$('[data-sub]').forEach(b => b.addEventListener('click', () => {
   $$('.sub').forEach(s => s.hidden = s.id !== 'sub-'+b.dataset.sub);
 }));
 
+/* Diary */
+const DSYMS = ['غثيان','ترجيع','صداع','تعب','دوخة','حرقان','إمساك','تورم','ألم ضهر','تقلصات','أرق','قلق','نزيف بسيط','إفرازات'];
+const MOODS = ['','😣','😕','😐','🙂','😍'];
+let dMood = 0, dSel = new Set();
+$('#dSym').innerHTML = DSYMS.map(s => `<button type="button" data-dsym="${s}" aria-pressed="false">${s}</button>`).join('');
+$('#dMood').addEventListener('click', e => { const b = e.target.closest('[data-mood]'); if (!b) return; dMood = +b.dataset.mood; paintDiaryForm(); });
+$('#dSym').addEventListener('click', e => { const b = e.target.closest('[data-dsym]'); if (!b) return; const s = b.dataset.dsym; dSel.has(s) ? dSel.delete(s) : dSel.add(s); paintDiaryForm(); });
+$('#dDate').addEventListener('change', () => loadDiary($('#dDate').value));
+function paintDiaryForm(){
+  $$('#dMood button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.mood === dMood));
+  $$('#dSym button').forEach(b => b.setAttribute('aria-pressed', dSel.has(b.dataset.dsym)));
+}
+function loadDiary(date){
+  const e = S.log.find(x => x.date === date) || {};
+  $('#dDate').value = date; dMood = e.mood || 0; dSel = new Set(e.sym || []);
+  $('#dSys').value = e.sys || ''; $('#dDia').value = e.dia || ''; $('#dSugar').value = e.sugar || '';
+  $('#dSugarType').value = e.sugarType || 'fasting'; $('#dNote').value = e.note || '';
+  paintDiaryForm();
+}
+function bpFlag(e){ return e.sys && e.dia && (e.sys >= 140 || e.dia >= 90); }
+function sugarFlag(e){ if (!e.sugar) return false; return e.sugarType === 'fasting' ? e.sugar > 95 : e.sugarType === 'after' ? e.sugar > 120 : e.sugar > 140; }
+$('#sub-diary').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const e = {date:$('#dDate').value, mood:dMood, sym:[...dSel], sys:+$('#dSys').value||0, dia:+$('#dDia').value||0, sugar:+$('#dSugar').value||0, sugarType:$('#dSugarType').value, note:$('#dNote').value.trim()};
+  S.log = S.log.filter(x => x.date !== e.date); S.log.push(e); S.log.sort((a,b)=>b.date.localeCompare(a.date)); save();
+  let warn = '';
+  if (bpFlag(e)) warn += `<div class="callout bad">الضغط ${ar(e.sys)}/${ar(e.dia)} عالي. كلمي الدكتور النهارده، وفوراً لو معاه صداع شديد أو زغللة أو تورم.</div>`;
+  if (sugarFlag(e)) warn += `<div class="callout bad">قراية السكر أعلى من المعتاد في الحمل. ورّيها للدكتور.</div>`;
+  if (e.sym.includes('نزيف بسيط')) warn += `<div class="callout bad">أي نزيف في الحمل لازم تبلّغي بيه الدكتور.</div>`;
+  $('#dWarn').innerHTML = warn;
+  renderDiary(); toast('اتحفظ اليوم ✓');
+});
+function renderDiary(){
+  $('#dList').innerHTML = S.log.length ? '<h3 style="margin-top:8px">الأيام اللي فاتت</h3>' + S.log.slice(0,14).map(e => {
+    const bits = [];
+    if (e.sys) bits.push(`ضغط ${ar(e.sys)}/${ar(e.dia)}${bpFlag(e)?' ⚠️':''}`);
+    if (e.sugar) bits.push(`سكر ${ar(e.sugar)}${sugarFlag(e)?' ⚠️':''}`);
+    return `<div class="item" data-dday="${e.date}" style="cursor:pointer"><span style="font-size:1.6rem">${MOODS[e.mood]||'📝'}</span><div class="body"><b>${fmtShort(parse(e.date))}</b>${e.sym.length?`<div class="muted">${e.sym.join('، ')}</div>`:''}${bits.length?`<div class="muted">${bits.join(' · ')}</div>`:''}${e.note?`<div>${esc(e.note)}</div>`:''}</div></div>`;
+  }).join('') : '';
+}
+document.addEventListener('click', e => { const r = e.target.closest('[data-dday]'); if (r){ loadDiary(r.dataset.dday); $('#sub-diary').scrollIntoView({behavior:'smooth'}); } });
+
 /* Kicks */
 let kick = null, kickTick;
 const mmss = ms => { const s = Math.floor(ms/1000); return `${ar(Math.floor(s/60))}:${ar(pad(s%60))}`; };
@@ -907,11 +1061,34 @@ $('#wForm').addEventListener('submit', e => {
   S.weights.push({date:$('#wDate').value, kg:+$('#wKg').value});
   S.weights.sort((a,b)=>a.date.localeCompare(b.date)); save(); $('#wKg').value=''; renderWeight(); toast('اتسجل الوزن');
 });
+/* Healthy weight-gain range by pre-pregnancy BMI (IOM 2009 guidance, single pregnancy) */
+function weightAdvice(){
+  const {height:h, preW} = S.profile;
+  if (!h || !preW) return `<div class="callout">ضيفي <b>الطول</b> و<b>الوزن قبل الحمل</b> في البروفايل، وهنقولك الزيادة الطبيعية ليكي في كل أسبوع. <button type="button" class="btn-ghost btn-sm" data-go="settings">افتحي البروفايل</button></div>`;
+  const bmi = preW / Math.pow(h/100, 2);
+  const [cat, lo, hi] = bmi < 18.5 ? ['أقل من الطبيعي',12.5,18] : bmi < 25 ? ['طبيعي',11.5,16] : bmi < 30 ? ['زيادة وزن',7,11.5] : ['سمنة',5,9];
+  const w = preg().week;
+  const eLo = w <= 13 ? 0.5*w/13 : 0.5 + (lo-0.5)*(Math.min(w,40)-13)/27;
+  const eHi = w <= 13 ? 2*w/13 : 2 + (hi-2)*(Math.min(w,40)-13)/27;
+  const f = n => ar(n.toFixed(1));
+  let status = '';
+  const last = S.weights.at(-1);
+  if (last){
+    const g = last.kg - preW;
+    status = g < eLo - 0.5 ? `<p>زيادتك دلوقتي <b>${f(g)} كجم</b>، أقل من المتوقع شوية. اتكلمي مع الدكتور عن الأكل.</p>`
+           : g > eHi + 0.5 ? `<p>زيادتك دلوقتي <b>${f(g)} كجم</b>، أكتر من المتوقع شوية. ركزي على الأكل الصحي والمشي، واسألي الدكتور.</p>`
+           : `<p>زيادتك دلوقتي <b>${f(g)} كجم</b>، في المعدل الطبيعي 👏</p>`;
+  }
+  const cls = !last ? '' : (last.kg - preW < eLo - 0.5 || last.kg - preW > eHi + 0.5) ? 'bad' : 'ok';
+  return `<div class="callout ${cls} stack" style="gap:4px"><p>مؤشر كتلة الجسم قبل الحمل: <b>${f(bmi)}</b> (${cat})</p><p>الزيادة الطبيعية طول الحمل: <b>${ar(lo)}–${ar(hi)} كجم</b></p><p>المتوقع لحد الأسبوع ${ar(w)}: <b>${f(eLo)}–${f(eHi)} كجم</b></p>${status}</div>`;
+}
 function renderWeight(){
   const W = S.weights;
+  $('#wAdvice').innerHTML = weightAdvice();
   if (!W.length){ $('#wSummary').textContent = 'سجلي وزنك مرة في الأسبوع في نفس اليوم والوقت.'; $('#wChart').innerHTML=''; $('#wList').innerHTML=''; return; }
-  const diff = (W[W.length-1].kg - W[0].kg).toFixed(1);
-  $('#wSummary').textContent = `الزيادة من أول تسجيل: ${ar(diff)} كجم`;
+  const base = S.profile.preW || W[0].kg;
+  const diff = (W[W.length-1].kg - base).toFixed(1);
+  $('#wSummary').textContent = `الزيادة ${S.profile.preW ? 'من قبل الحمل' : 'من أول تسجيل'}: ${ar(diff)} كجم`;
   if (W.length > 1){
     const min = Math.min(...W.map(w=>w.kg)) - 1, max = Math.max(...W.map(w=>w.kg)) + 1, w = 320, h = 120;
     const t0 = parse(W[0].date).getTime(), t1 = parse(W[W.length-1].date).getTime() || t0+1;
@@ -932,7 +1109,7 @@ let swReg = null;
 if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').then(r => swReg = r).catch(()=>{});
 async function notify(title, body, tag){
   if (!('Notification' in window) || Notification.permission !== 'granted') return false;
-  const opts = {body, tag, icon:'icon.svg', badge:'icon.svg', dir:'rtl', lang:'ar', vibrate:[200,100,200]};
+  const opts = {body, tag, icon:'icon-192.png', badge:'badge.png', dir:'rtl', lang:'ar', vibrate:[200,100,200]};
   try { if (swReg) { await swReg.showNotification(title, opts); return true; } new Notification(title, opts); return true; } catch(e){ return false; }
 }
 function renderSettings(){
@@ -943,7 +1120,12 @@ function renderSettings(){
   else st = 'الإشعارات لسه مش متفعلة.';
   $('#notifState').textContent = st;
   $('#notifBtn').hidden = !('Notification' in window) || Notification.permission === 'granted';
-  if (S.lmp){ $('#pName').value = $('#pName').value || S.name; $('#pLmp').value = $('#pLmp').value || S.lmp; $('#pDue').textContent = 'ميعاد الولادة المتوقع: ' + fmtDate(addDays(parse(S.lmp),280)); }
+  if (S.lmp) $('#pDue').textContent = 'ميعاد الولادة المتوقع: ' + fmtDate(addDays(parse(S.lmp),280));
+}
+const PF = {pAge:'age',pHeight:'height',pPreW:'preW',pBlood:'blood',pFirst:'first',pBaby:'baby',pSex:'sex',pDoctor:'doctor',pDoctorPhone:'doctorPhone',pHospital:'hospital',pEmergency:'emergency'};
+function fillProfile(){
+  $('#pName').value = S.name || ''; $('#pLmp').value = S.lmp || '';
+  Object.entries(PF).forEach(([id,k]) => $('#'+id).value = S.profile[k] ?? '');
 }
 $('#notifBtn').addEventListener('click', async () => {
   const r = await Notification.requestPermission(); renderSettings();
@@ -1018,7 +1200,12 @@ $('#icsWeeks').onclick = () => downloadIcs(weekEvents(), 'hamly-weeks');
 $('#icsAll').onclick = () => downloadIcs([...weekEvents(), ...medEvents(), ...apptEvents()], 'hamly-all');
 
 /* ---------- Settings: profile, backup ---------- */
-$('#profileForm').addEventListener('submit', e => { e.preventDefault(); S.name = $('#pName').value.trim(); S.lmp = $('#pLmp').value; save(); render(); toast('اتحفظ ✓'); });
+$('#profileForm').addEventListener('submit', e => {
+  e.preventDefault();
+  S.name = $('#pName').value.trim(); S.lmp = $('#pLmp').value;
+  Object.entries(PF).forEach(([id,k]) => { const v = $('#'+id).value.trim(); S.profile[k] = $('#'+id).type === 'number' ? (v ? +v : '') : v; });
+  save(); render(); toast('اتحفظ البروفايل ✓');
+});
 $('#exportBtn').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(S,null,1)], {type:'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `hamly-backup-${ymd(today0())}.json`; a.click();
@@ -1047,7 +1234,7 @@ function boot(){
   const has = !!S.lmp;
   $('#tabs').hidden = !has;
   if (!has){ $$('.view').forEach(v => v.hidden = v.id !== 'v-setup'); return; }
-  resetMedForm(); $('#aDate').min = ymd(today0()); $('#wDate').value = ymd(today0());
+  resetMedForm(); $('#aDate').min = ymd(today0()); $('#wDate').value = ymd(today0()); loadDiary(ymd(today0()));
   go('home'); scrollWeekbar(); checkReminders();
 }
 load(); boot();
