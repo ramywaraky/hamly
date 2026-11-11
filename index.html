@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="حملي">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>try{if(localStorage.getItem('hamly-lang')==='en'){document.documentElement.lang='en';document.documentElement.dir='ltr';}}catch(e){}</script>
 <script>try{var t=localStorage.getItem('hamly-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -111,6 +112,16 @@ textarea{min-height:64px;resize:vertical}
 .callout{border-radius:14px;padding:12px 14px;background:var(--bg);border:1px solid var(--line)}
 .callout.bad{border-color:#C0392B;background:color-mix(in srgb,#C0392B 10%,var(--surface))}
 .callout.ok{border-color:var(--sage);background:var(--sage-soft)}
+h2.sect{font-size:1rem;color:var(--rose);margin-top:10px;margin-bottom:-4px}
+.acct{display:flex;gap:14px;align-items:center;padding:14px;border-radius:20px;background:linear-gradient(160deg,var(--rose-soft),var(--surface) 80%);border:1px solid var(--line)}
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--rose);color:#fff;font-family:var(--display);font-size:1.5rem;display:flex;align-items:center;justify-content:center;flex:none}
+.iconseg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.iconseg button{background:var(--bg);color:var(--muted);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 0 10px;font-size:.85rem}
+.iconseg button svg{width:28px;height:28px}
+.iconseg.two{grid-template-columns:1fr 1fr}
+.iconseg .lg{font-family:var(--display);font-size:1.3rem;line-height:28px;height:28px}
+[dir="ltr"] .link .arr{transform:scaleX(-1)}
+.iconseg button[aria-pressed="true"]{background:var(--rose-soft);color:var(--rose);border-color:var(--rose)}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .seg button{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--rose);color:#fff;border-color:var(--rose)}
@@ -409,34 +420,19 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
 <!-- ============ SETTINGS ============ -->
 <main class="wrap view" id="v-settings" hidden>
   <div class="stack">
-    <h1>حسابي والإعدادات</h1>
-    <section class="card stack">
-      <h2>شكل التطبيق</h2>
-      <div class="seg" role="group" aria-label="الوضع">
-        <button type="button" data-theme-set="auto">تلقائي</button>
-        <button type="button" data-theme-set="light">☀️ فاتح</button>
-        <button type="button" data-theme-set="dark">🌙 غامق</button>
-      </div>
-      <p class="muted">«تلقائي» بيمشي مع إعداد الموبايل.</p>
-    </section>
-    <section class="card stack">
-      <h2>الإشعارات</h2>
-      <p class="muted" id="notifState"></p>
-      <div class="row"><button id="notifBtn">تفعيل الإشعارات</button><button class="btn-ghost" id="notifTest">جربي إشعار</button></div>
-    </section>
-    <section class="card stack">
-      <h2>تذكيرات مضمونة حتى والموبايل مقفول</h2>
-      <p class="muted">المتصفح ممكن يوقف التطبيق وهو مقفول. عشان التذكير يوصلك أكيد، ضيفي التذكيرات لتقويم الموبايل (Google Calendar أو تقويم الآيفون) وهو اللي هيطلّع الإشعار في ميعاده.</p>
-      <button class="btn-sage" id="icsWeeks">رسالة كل أسبوع «انتي في الأسبوع الكام»</button>
-      <button class="btn-sage" id="icsMeds2">تذكير الأدوية في مواعيدها</button>
-      <button class="btn-sage" id="icsAppts2">المواعيد عند الدكتور</button>
-      <button class="btn-sage" id="icsAll">الكل في ملف واحد</button>
-    </section>
+    <h1>حسابي</h1>
+
+    <div class="acct">
+      <div class="avatar" id="acctAvatar">🤰</div>
+      <div style="min-width:0"><b id="acctName">بياناتي</b><div class="muted" id="acctSub"></div></div>
+    </div>
+
+    <!-- 1. Profile -->
+    <h2 class="sect">👩 بياناتي</h2>
     <form class="card stack" id="profileForm">
-      <h2>👩 البروفايل</h2>
       <div class="grid2">
         <label>الاسم<input id="pName" autocomplete="given-name"></label>
-        <label>السن<input id="pAge" type="number" min="14" max="60" inputmode="numeric" placeholder="مثلاً ٢٨"></label>
+        <label>تاريخ الميلاد<input id="pDob" type="date"><span id="pAgeOut" style="font-size:.8rem;color:var(--rose)"></span></label>
         <label>الطول (سم)<input id="pHeight" type="number" min="120" max="210" inputmode="numeric" placeholder="١٦٠"></label>
         <label>الوزن قبل الحمل (كجم)<input id="pPreW" type="number" step="0.1" min="30" max="200" inputmode="decimal" placeholder="٦٠"></label>
         <label>فصيلة الدم
@@ -446,27 +442,63 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
           <select id="pFirst"><option value="">—</option><option value="yes">أيوه</option><option value="no">لأ</option></select>
         </label>
       </div>
-      <h2 style="margin-top:6px">👶 البيبي</h2>
+      <h3 style="margin-top:6px">🤰 الحمل</h3>
+      <label>أول يوم في آخر دورة<input id="pLmp" type="date" required></label>
+      <p class="muted" id="pDue"></p>
+      <h3 style="margin-top:6px">👶 البيبي</h3>
       <div class="grid2">
         <label>اسم البيبي (لو اخترتوه)<input id="pBaby"></label>
         <label>النوع
           <select id="pSex"><option value="">لسه مش عارفين</option><option value="boy">ولد 💙</option><option value="girl">بنت 💗</option></select>
         </label>
       </div>
-      <label>أول يوم في آخر دورة<input id="pLmp" type="date" required></label>
-      <p class="muted" id="pDue"></p>
-      <h2 style="margin-top:6px">☎️ أرقام مهمة</h2>
+      <h3 style="margin-top:6px">☎️ أرقام مهمة</h3>
       <div class="grid2">
         <label>اسم الدكتور<input id="pDoctor"></label>
         <label>رقم الدكتور<input id="pDoctorPhone" type="tel" inputmode="tel"></label>
         <label>المستشفى<input id="pHospital"></label>
         <label>رقم للطوارئ (الزوج مثلاً)<input id="pEmergency" type="tel" inputmode="tel"></label>
       </div>
-      <button type="submit">حفظ البروفايل</button>
+      <button type="submit">حفظ بياناتي</button>
     </form>
+
+    <!-- 2. Settings -->
+    <h2 class="sect">⚙️ الإعدادات</h2>
     <section class="card stack">
-      <h2>نسخة احتياطية</h2>
-      <p class="muted">البيانات متخزنة على الموبايل ده بس. احفظي نسخة من وقت للتاني أو انقليها لموبايل تاني.</p>
+      <h3>شكل التطبيق</h3>
+      <div class="iconseg" role="group" aria-label="شكل التطبيق">
+        <button type="button" data-theme-set="auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/><path d="M12 4v12" stroke-dasharray="2 2"/></svg><span>تلقائي</span></button>
+        <button type="button" data-theme-set="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>فاتح</span></button>
+        <button type="button" data-theme-set="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span>غامق</span></button>
+      </div>
+      <p class="muted">«تلقائي» بيمشي مع إعداد الموبايل.</p>
+      <h3 style="margin-top:6px">اللغة</h3>
+      <div class="iconseg two" role="group" aria-label="Language">
+        <button type="button" data-lang-set="ar"><span class="lg">ع</span><span lang="ar">العربية</span></button>
+        <button type="button" data-lang-set="en"><span class="lg">En</span><span lang="en">English</span></button>
+      </div>
+    </section>
+
+    <!-- 3. Notifications -->
+    <h2 class="sect">🔔 الإشعارات</h2>
+    <section class="card stack">
+      <div class="row between" style="flex-wrap:nowrap"><h3>إشعارات التطبيق</h3><span class="chip" id="notifChip">—</span></div>
+      <p class="muted" id="notifState"></p>
+      <div class="row"><button id="notifBtn">تفعيل الإشعارات</button><button class="btn-ghost" id="notifTest">جربي إشعار</button></div>
+    </section>
+    <section class="card stack">
+      <h3>تذكيرات مضمونة حتى والموبايل مقفول</h3>
+      <p class="muted">المتصفح ممكن يوقف التطبيق وهو مقفول. عشان التذكير يوصلك أكيد، ضيفيه لتقويم الموبايل (Google Calendar أو تقويم الآيفون) وهو اللي هيطلّع الإشعار في ميعاده.</p>
+      <button class="btn-sage" id="icsAll">⭐ الكل في ملف واحد</button>
+      <button class="btn-sage" id="icsWeeks">رسالة كل أسبوع «انتي في الأسبوع الكام»</button>
+      <button class="btn-sage" id="icsMeds2">تذكير الأدوية في مواعيدها</button>
+      <button class="btn-sage" id="icsAppts2">المواعيد عند الدكتور</button>
+    </section>
+
+    <!-- 4. Backup -->
+    <h2 class="sect">💾 النسخة الاحتياطية</h2>
+    <section class="card stack">
+      <p class="muted">البيانات متخزنة على الموبايل ده بس. احفظي نسخة من وقت للتاني، أو انقليها لموبايل تاني.</p>
       <div class="row"><button class="btn-ghost" id="exportBtn">حفظ نسخة</button><label class="btn btn-ghost" style="flex-direction:row;color:var(--rose)">استرجاع نسخة<input type="file" id="importFile" accept="application/json" hidden></label></div>
       <button class="btn-danger" id="resetBtn">مسح كل البيانات</button>
     </section>
@@ -482,8 +514,13 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
 </nav>
 <div class="toast" id="toast" hidden></div>
 
+<script src="i18n-en.js"></script>
 <script>
 'use strict';
+const LANG = (() => { try { return localStorage.getItem('hamly-lang') === 'en' ? 'en' : 'ar'; } catch(_) { return 'ar'; } })();
+const EN = LANG === 'en', X = EN ? (window.HAMLY_EN || null) : null;
+const tr = (a, e) => (EN && X) ? e : a;
+const LOC = EN ? 'en-GB' : 'ar-EG';
 /* ---------- Week data ---------- */
 const WEEKS = {
  1:['🌱','لسه في البداية','','الحمل بيتحسب من أول يوم في آخر دورة، فالأسابيع الأولى دي قبل التبويض فعلياً.','لو بتخططي للحمل، الفوليك أسيد مهم من دلوقتي بعد استشارة الدكتور.'],
@@ -657,19 +694,34 @@ const CHANGES = [
 ];
 const WARN = ['نزيف من المهبل','نزول مية أو سائل مستمر','ألم شديد في البطن أو تقلصات مستمرة','صداع شديد مع زغللة أو تورم مفاجئ في الوش والإيدين','سخونية ٣٨ أو أكتر','حركة البيبي قلت أو وقفت (بعد الأسبوع ٢٨)','ترجيع شديد ومش قادرة تشربي','حرقان أو ألم شديد في البول','طلق منتظم قبل الأسبوع ٣٧','ضيق تنفس مفاجئ أو ألم في الصدر','ألم وتورم في سمانة رجل واحدة','دوخة شديدة أو إغماء'];
 
+if (X){
+  Object.assign(WEEKS, X.WEEKS); Object.assign(SYM, X.SYM); Object.assign(TIPS, X.TIPS);
+  NUTRITION.splice(0, NUTRITION.length, ...X.NUTRITION); CHANGES.splice(0, CHANGES.length, ...X.CHANGES);
+  WARN.splice(0, WARN.length, ...X.WARN); BAG.splice(0, BAG.length, ...X.BAG);
+  TESTS.forEach((t,i) => t[2] = X.TESTS[i]);
+}
+/* Translate fixed screen text once (Arabic is the source). */
+function translateStatic(){
+  if (!X) return;
+  const D = X.UI, norm = t => t.replace(/\s+/g,' ').trim();
+  const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
+  nodes.forEach(n => { const k = norm(n.nodeValue); if (k && D[k] !== undefined) n.nodeValue = n.nodeValue.replace(n.nodeValue.trim(), D[k]); });
+  document.querySelectorAll('[placeholder],[aria-label],[title]').forEach(el => ['placeholder','aria-label','title'].forEach(a => { const v = el.getAttribute(a); if (v && D[norm(v)] !== undefined) el.setAttribute(a, D[norm(v)]); }));
+}
 /* ---------- Helpers ---------- */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const DAY = 86400000;
-const ar = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+const ar = n => EN ? String(n) : String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
 const pad = n => String(n).padStart(2,'0');
 const ymd = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
 const today0 = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
 const addDays = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
-const fmtDate = d => d.toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-const fmtShort = d => d.toLocaleDateString('ar-EG',{day:'numeric',month:'short'});
-const fmtTime = t => { const [h,m] = t.split(':').map(Number); const h12 = ((h+11)%12)+1; return `${ar(h12)}:${ar(pad(m))} ${h<12?'ص':'م'}`; };
+const fmtDate = d => d.toLocaleDateString(LOC,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const fmtShort = d => d.toLocaleDateString(LOC,{day:'numeric',month:'short'});
+const fmtTime = t => { const [h,m] = t.split(':').map(Number); const h12 = ((h+11)%12)+1; return `${ar(h12)}:${ar(pad(m))} ${h<12?tr('ص','AM'):tr('م','PM')}`; };
 const uid = () => Math.random().toString(36).slice(2,10);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -678,7 +730,7 @@ const KEY = 'hamly-v1';
 let S;
 function blank(){ return {name:'',lmp:null,profile:{},log:[],readNotifs:{},meds:[],taken:{},appts:[],tests:{},bag:{},kicks:[],contr:[],weights:[],water:{},lastWeekSeen:0,notified:{}}; }
 function load(){ try{ S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY)||'{}')); }catch(e){ S = blank(); } }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast('مقدرناش نحفظ، المساحة مليانة أو التخزين مقفول'); } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast(tr('مقدرناش نحفظ، المساحة مليانة أو التخزين مقفول','Couldn\'t save: storage is full or blocked')); } }
 
 function preg(date = today0()){
   const lmp = parse(S.lmp);
@@ -687,7 +739,7 @@ function preg(date = today0()){
   const w = Math.floor(days/7), d = days%7;
   return {days, w, d, week: Math.min(42, Math.max(1, w+1)), due, left: Math.round((due - date)/DAY), pct: Math.min(100, Math.max(0, Math.round(days/280*100)))};
 }
-const trimester = wk => wk <= 13 ? 'الثلث الأول' : wk <= 27 ? 'الثلث التاني' : 'الثلث الأخير';
+const trimester = wk => wk <= 13 ? tr('الثلث الأول','1st trimester') : wk <= 27 ? tr('الثلث التاني','2nd trimester') : tr('الثلث الأخير','3rd trimester');
 
 /* ---------- Toast ---------- */
 let toastT;
@@ -717,13 +769,13 @@ function dosesFor(date){
 }
 function doseHTML(x, dateKey){
   const done = !!(S.taken[dateKey]||{})[x.key];
-  return `<div class="dose ${done?'done':''}"><div class="time">${fmtTime(x.t)}</div><div style="flex:1;min-width:0"><div class="name" style="font-weight:600">${esc(x.m.name)}</div><div class="muted">${esc(x.m.dose||'')}${x.m.notes? ' · '+esc(x.m.notes):''}</div></div><button class="check" data-take="${x.key}" aria-label="${done?'إلغاء':'خدتها'}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg></button></div>`;
+  return `<div class="dose ${done?'done':''}"><div class="time">${fmtTime(x.t)}</div><div style="flex:1;min-width:0"><div class="name" style="font-weight:600">${esc(x.m.name)}</div><div class="muted">${esc(x.m.dose||'')}${x.m.notes? ' · '+esc(x.m.notes):''}</div></div><button class="check" data-take="${x.key}" aria-label="${done?tr('إلغاء','Undo'):tr('خدتها','Taken')}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg></button></div>`;
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-take]'); if (!b) return;
   const k = ymd(today0()); S.taken[k] = S.taken[k]||{};
   S.taken[k][b.dataset.take] = !S.taken[k][b.dataset.take];
-  if (S.taken[k][b.dataset.take]) toast('برافو! اتسجلت ✓');
+  if (S.taken[k][b.dataset.take]) toast(tr('برافو! اتسجلت ✓','Well done! Logged ✓'));
   save(); render();
 });
 
@@ -732,69 +784,72 @@ function render(){
   if (!S.lmp) return;
   const p = preg(), wk = p.week, info = WEEKS[wk];
   const h = new Date().getHours();
-  $('#hello').textContent = (h < 12 ? 'صباح الخير' : 'مساء الخير') + (S.name ? ` يا ${S.name}` : '');
-  $('#homeTitle').textContent = p.days < 0 ? 'التاريخ لسه ما جاش' : `انتي في الأسبوع ${ar(wk)}`;
+  $('#hello').textContent = (h < 12 ? tr('صباح الخير','Good morning') : tr('مساء الخير','Good evening')) + (S.name ? tr(` يا ${S.name}`, `, ${S.name}`) : '');
+  $('#homeTitle').textContent = p.days < 0 ? tr('التاريخ لسه ما جاش','That date hasn\'t come yet') : tr(`انتي في الأسبوع ${ar(wk)}`, `You're in week ${wk}`);
   $('#trimChip').textContent = trimester(wk);
   $('#ringWeek').textContent = ar(wk);
   $('#ringFg').style.strokeDashoffset = 326.7 * (1 - p.pct/100);
-  $('#gaText').textContent = `${ar(p.w)} أسبوع و${ar(p.d)} ${p.d===1?'يوم':'أيام'}`;
-  $('#dueText').textContent = 'ميعاد الولادة المتوقع: ' + fmtDate(p.due);
-  $('#leftText').textContent = p.left > 0 ? `فاضل ${ar(p.left)} يوم (حوالي ${ar(Math.ceil(p.left/7))} أسبوع)` : 'وصلنا لميعاد الولادة المتوقع 💗';
-  $('#stPct').textContent = ar(p.pct) + '٪';
+  $('#gaText').textContent = tr(`${ar(p.w)} أسبوع و${ar(p.d)} ${p.d===1?'يوم':'أيام'}`, `${p.w} weeks and ${p.d} day${p.d===1?'':'s'}`);
+  $('#dueText').textContent = tr('ميعاد الولادة المتوقع: ','Due date: ') + fmtDate(p.due);
+  $('#leftText').textContent = p.left > 0 ? tr(`فاضل ${ar(p.left)} يوم (حوالي ${ar(Math.ceil(p.left/7))} أسبوع)`, `${p.left} days to go (about ${Math.ceil(p.left/7)} weeks)`) : tr('وصلنا لميعاد الولادة المتوقع 💗','You\'ve reached your due date 💗');
+  $('#stPct').textContent = ar(p.pct) + tr('٪','%');
   const doses = dosesFor(today0()), tk = S.taken[ymd(today0())]||{};
   $('#stDoses').textContent = `${ar(doses.filter(x=>tk[x.key]).length)}/${ar(doses.length)}`;
   const next = upcomingAppts()[0];
   $('#stAppt').textContent = next ? fmtShort(parse(next.date)) : '—';
 
-  // weekly banner
-  if (S.lastWeekSeen !== wk){
+  // birthday + weekly banner
+  if (isBirthday(S.profile.dob)){
     $('#weekBanner').hidden = false;
-    $('#weekBanner').textContent = `🎉 مبروك! دخلتي الأسبوع ${ar(wk)}. البيبي دلوقتي قد ${info[1]}.`;
+    $('#weekBanner').textContent = tr(`🎂 كل سنة وانتي طيبة${S.name ? ' يا ' + S.name : ''}! عيد ميلاد سعيد، والسنة الجاية تحتفلي ومعاكي البيبي 💗`, `🎂 Happy birthday${S.name ? ', ' + S.name : ''}! Next year you'll celebrate with your baby 💗`);
+  } else if (S.lastWeekSeen !== wk){
+    $('#weekBanner').hidden = false;
+    $('#weekBanner').textContent = tr(`🎉 مبروك! دخلتي الأسبوع ${ar(wk)}. البيبي دلوقتي قد ${info[1]}.`, `🎉 Congratulations! You're now in week ${wk}. Your baby is the size of ${info[1]}.`);
     S.lastWeekSeen = wk; save();
   }
   renderWeek(selWeek || wk, wk);
   renderInfo(p);
   if (!$('#v-page').hidden) renderPage();
 
-  $('#homeDoses').innerHTML = doses.length ? doses.map(x => doseHTML(x, ymd(today0()))).join('') : `<div class="empty">مفيش أدوية النهارده. ضيفي الفيتامينات من صفحة الأدوية.</div>`;
-  $('#todayDoses').innerHTML = doses.length ? doses.map(x => doseHTML(x, ymd(today0()))).join('') : `<div class="empty">مفيش جرعات النهارده.</div>`;
+  $('#homeDoses').innerHTML = doses.length ? doses.map(x => doseHTML(x, ymd(today0()))).join('') : `<div class="empty">${tr('مفيش أدوية النهارده. ضيفي الفيتامينات من صفحة الأدوية.','No medicines today. Add your vitamins on the Medicines page.')}</div>`;
+  $('#todayDoses').innerHTML = doses.length ? doses.map(x => doseHTML(x, ymd(today0()))).join('') : `<div class="empty">${tr('مفيش جرعات النهارده.','No doses today.')}</div>`;
 
   $('#medList').innerHTML = S.meds.length ? S.meds.map(m => {
     const end = m.days ? addDays(parse(m.start), m.days-1) : null;
-    const active = medActiveOn(m, today0()) ? '<span class="chip">شغال</span>' : '<span class="chip warn">مش شغال النهارده</span>';
-    return `<div class="item"><div class="body"><div class="row"><b>${esc(m.name)}</b>${active}</div><div class="muted">${esc(m.dose||'')} · ${m.times.map(fmtTime).join(' و ')}</div><div class="muted">من ${fmtShort(parse(m.start))} ${end? 'لحد '+fmtShort(end) : '· مستمر'}</div></div><button class="btn-ghost btn-sm" data-edit="${m.id}">تعديل</button><button class="btn-danger btn-sm" data-del-med="${m.id}">حذف</button></div>`;
-  }).join('') : `<div class="empty">لسه ما ضفتيش أدوية.</div>`;
+    const active = medActiveOn(m, today0()) ? `<span class="chip">${tr('شغال','Active')}</span>` : `<span class="chip warn">${tr('مش شغال النهارده','Not today')}</span>`;
+    return `<div class="item"><div class="body"><div class="row"><b>${esc(m.name)}</b>${active}</div><div class="muted">${esc(m.dose||'')} · ${m.times.map(fmtTime).join(tr(' و ',', '))}</div><div class="muted">${tr('من','From')} ${fmtShort(parse(m.start))} ${end? tr('لحد ','to ')+fmtShort(end) : tr('· مستمر','· ongoing')}</div></div><button class="btn-ghost btn-sm" data-edit="${m.id}">${tr('تعديل','Edit')}</button><button class="btn-danger btn-sm" data-del-med="${m.id}">${tr('حذف','Delete')}</button></div>`;
+  }).join('') : `<div class="empty">${tr('لسه ما ضفتيش أدوية.','No medicines added yet.')}</div>`;
 
   const ups = upcomingAppts();
-  $('#apptList').innerHTML = ups.length ? ups.map(a => `<div class="item"><div class="body"><b>${esc(a.title)}</b><div class="muted">${fmtDate(parse(a.date))} · ${fmtTime(a.time)}</div>${a.notes?`<div class="muted">${esc(a.notes)}</div>`:''}</div><button class="btn-danger btn-sm" data-del-appt="${a.id}">حذف</button></div>`).join('') : `<div class="empty">مفيش مواعيد جاية.</div>`;
+  $('#apptList').innerHTML = ups.length ? ups.map(a => `<div class="item"><div class="body"><b>${esc(a.title)}</b><div class="muted">${fmtDate(parse(a.date))} · ${fmtTime(a.time)}</div>${a.notes?`<div class="muted">${esc(a.notes)}</div>`:''}</div><button class="btn-danger btn-sm" data-del-appt="${a.id}">${tr('حذف','Delete')}</button></div>`).join('') : `<div class="empty">${tr('مفيش مواعيد جاية.','No upcoming appointments.')}</div>`;
 
   $('#testsList').innerHTML = TESTS.map(([a,b,t],i) => {
     const st = wk > b ? 'past' : wk >= a ? 'now' : '';
-    const range = a===b ? `أسبوع ${ar(a)}` : `أسبوع ${ar(a)}–${ar(b)}`;
-    return `<div class="item ${st}"><span class="dot"></span><div class="body"><b>${t}</b><div class="muted">${range} ${st==='now'?'<span class="chip rose">دلوقتي</span>':''}</div></div><input type="checkbox" style="width:22px;height:22px" data-test="${i}" ${S.tests[i]?'checked':''} aria-label="خلصت"></div>`;
+    const range = a===b ? `${tr('أسبوع','Week')} ${ar(a)}` : `${tr('أسبوع','Weeks')} ${ar(a)}–${ar(b)}`;
+    return `<div class="item ${st}"><span class="dot"></span><div class="body"><b>${t}</b><div class="muted">${range} ${st==='now'?`<span class="chip rose">${tr('دلوقتي','Now')}</span>`:''}</div></div><input type="checkbox" style="width:22px;height:22px" data-test="${i}" ${S.tests[i]?'checked':''} aria-label="${tr('خلصت','Done')}"></div>`;
   }).join('');
 
   $('#bagList').innerHTML = BAG.map((t,i)=>`<label class="item" style="flex-direction:row;color:var(--ink);font-size:1rem"><input type="checkbox" style="width:22px;height:22px" data-bag="${i}" ${S.bag[i]?'checked':''}><span class="body">${t}</span></label>`).join('');
 
   renderKicks(); renderContr(); renderWeight(); renderWater(); renderSettings(); renderDiary(); renderBell();
-  if (S.profile.baby) $('#fruitName').textContent = `${S.profile.baby} ${S.profile.sex==='girl'?'💗':S.profile.sex==='boy'?'💙':''} دلوقتي قد ${WEEKS[selWeek||wk][1]}`;
+  if (S.profile.baby) $('#fruitName').textContent = `${S.profile.baby} ${S.profile.sex==='girl'?'💗':S.profile.sex==='boy'?'💙':''} ${tr('دلوقتي قد','is now the size of')} ${WEEKS[selWeek||wk][1]}`;
 }
 
 let selWeek = 0;
 function renderWeek(w, cur){
   const info = WEEKS[w];
-  $('#babyWeekLbl').textContent = w === cur ? 'الأسبوع ده' : `الأسبوع ${ar(w)}`;
+  $('#babyWeekLbl').textContent = w === cur ? tr('الأسبوع ده','This week') : `${tr('الأسبوع','Week')} ${ar(w)}`;
   $('#fruit').textContent = info[0];
-  $('#fruitName').textContent = 'قد ' + info[1];
+  $('#fruitName').textContent = tr('قد ','Size of ') + info[1];
   $('#fruitMeasure').textContent = info[2];
   $('#devText').textContent = info[3];
   $('#tipText').textContent = info[4];
   const bar = $('#weekbar');
   if (!bar.childElementCount){
-    bar.innerHTML = Array.from({length:42},(_,i)=>`<button type="button" data-week="${i+1}"><span class="e">${WEEKS[i+1][0]}</span>أسبوع ${ar(i+1)}</button>`).join('');
+    bar.innerHTML = Array.from({length:42},(_,i)=>`<button type="button" data-week="${i+1}"><span class="e">${WEEKS[i+1][0]}</span>${tr('أسبوع','Week')} ${ar(i+1)}</button>`).join('');
   }
-  $('#lnkSym').textContent = `أعراض الأسبوع ${ar(w)}`;
-  $('#lnkTips').textContent = `نصائح الأسبوع ${ar(w)}`;
+  $('#lnkSym').textContent = tr(`أعراض الأسبوع ${ar(w)}`, `Week ${w} symptoms`);
+  $('#lnkTips').textContent = tr(`نصائح الأسبوع ${ar(w)}`, `Week ${w} tips`);
   $$('#weekbar button').forEach(b => { b.classList.toggle('cur', +b.dataset.week === cur); b.classList.toggle('sel', +b.dataset.week === w && w !== cur); });
 }
 document.addEventListener('click', e => {
@@ -802,22 +857,22 @@ document.addEventListener('click', e => {
   selWeek = +b.dataset.week; renderWeek(selWeek, preg().week);
 });
 /* ---------- Pregnancy details grid ---------- */
-const ORD = ['الأول','التاني','التالت','الرابع','الخامس','السادس','السابع','التامن','التاسع'];
-function season(d){ const m = d.getMonth(); return m===11||m<2 ? 'الشتاء ❄️' : m<5 ? 'الربيع 🌷' : m<8 ? 'الصيف ☀️' : 'الخريف 🍂'; }
+const ORD = EN ? ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th'] : ['الأول','التاني','التالت','الرابع','الخامس','السادس','السابع','التامن','التاسع'];
+function season(d){ const m = d.getMonth(); return m===11||m<2 ? tr('الشتاء ❄️','Winter ❄️') : m<5 ? tr('الربيع 🌷','Spring 🌷') : m<8 ? tr('الصيف ☀️','Summer ☀️') : tr('الخريف 🍂','Autumn 🍂'); }
 function renderInfo(p){
   const lmp = parse(S.lmp);
   let hijri = '—';
-  try { hijri = p.due.toLocaleDateString('ar-SA-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}); } catch(_){}
-  $('#iGreg').textContent = p.due.toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'});
+  try { hijri = p.due.toLocaleDateString(EN ? 'en-u-ca-islamic-umalqura' : 'ar-SA-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}); } catch(_){}
+  $('#iGreg').textContent = p.due.toLocaleDateString(LOC,{day:'numeric',month:'long',year:'numeric'});
   $('#iHijri').textContent = hijri;
-  $('#iWeek').textContent = `${ar(Math.max(0,p.w))} أسبوع و${ar(Math.max(0,p.d))} يوم`;
-  $('#iMonth').textContent = `الشهر ${ORD[Math.min(8, Math.max(0, Math.floor(p.days/30.44)))]}`;
-  $('#iLeft').textContent = p.left > 0 ? `${ar(Math.floor(p.left/7))} أسبوع و${ar(p.left%7)} يوم` : 'وصلنا 💗';
-  $('#iStart').textContent = lmp.toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric'});
-  $('#iDay').textContent = p.due.toLocaleDateString('ar-EG',{weekday:'long'});
+  $('#iWeek').textContent = tr(`${ar(Math.max(0,p.w))} أسبوع و${ar(Math.max(0,p.d))} يوم`, `${Math.max(0,p.w)}w ${Math.max(0,p.d)}d`);
+  $('#iMonth').textContent = tr(`الشهر ${ORD[Math.min(8, Math.max(0, Math.floor(p.days/30.44)))]}`, `${ORD[Math.min(8, Math.max(0, Math.floor(p.days/30.44)))]} month`);
+  $('#iLeft').textContent = p.left > 0 ? tr(`${ar(Math.floor(p.left/7))} أسبوع و${ar(p.left%7)} يوم`, `${Math.floor(p.left/7)}w ${p.left%7}d`) : tr('وصلنا 💗','Due now 💗');
+  $('#iStart').textContent = lmp.toLocaleDateString(LOC,{day:'numeric',month:'long',year:'numeric'});
+  $('#iDay').textContent = p.due.toLocaleDateString(LOC,{weekday:'long'});
   $('#iSeason').textContent = season(p.due);
   $('#iBar').style.width = p.pct + '%';
-  $('#iFrom').textContent = fmtShort(lmp); $('#iTo').textContent = fmtShort(p.due); $('#iPct').textContent = ar(p.pct) + '٪';
+  $('#iFrom').textContent = fmtShort(lmp); $('#iTo').textContent = fmtShort(p.due); $('#iPct').textContent = ar(p.pct) + tr('٪','%');
 }
 
 /* ---------- Notification center ---------- */
@@ -827,19 +882,19 @@ function notifItems(){
   dosesFor(today0()).forEach(x => {
     if (tk[x.key]) return;
     const late = x.t <= hm;
-    out.push({id:'dose-'+k+x.key, icon:'💊', unread:late, title: late ? `ميعاد ${esc(x.m.name)} فات` : `${esc(x.m.name)} الساعة ${fmtTime(x.t)}`,
-      body: late ? `كان المفروض الساعة ${fmtTime(x.t)} — ${esc(x.m.dose||'')}` : esc(x.m.dose||'جرعة النهارده'),
-      action:`<button class="btn-sage btn-sm" data-take="${x.key}">خدتها</button>`});
+    out.push({id:'dose-'+k+x.key, icon:'💊', unread:late, title: late ? tr(`ميعاد ${esc(x.m.name)} فات`, `${esc(x.m.name)} is overdue`) : tr(`${esc(x.m.name)} الساعة ${fmtTime(x.t)}`, `${esc(x.m.name)} at ${fmtTime(x.t)}`),
+      body: late ? tr(`كان المفروض الساعة ${fmtTime(x.t)} — ${esc(x.m.dose||'')}`, `Was due at ${fmtTime(x.t)} — ${esc(x.m.dose||'')}`) : esc(x.m.dose||tr('جرعة النهارده','Today\'s dose')),
+      action:`<button class="btn-sage btn-sm" data-take="${x.key}">${tr('خدتها','Taken')}</button>`});
   });
   upcomingAppts().forEach(a => {
     const days = Math.round((parse(a.date) - today0())/DAY);
-    if (days <= 2){ const id = 'appt-'+a.id; out.push({id, readable:1, unread:!S.readNotifs[id], icon:'🩺', title: days<=0 ? `ميعادك النهارده: ${esc(a.title)}` : days===1 ? `بكرة: ${esc(a.title)}` : `بعد يومين: ${esc(a.title)}`, body:`الساعة ${fmtTime(a.time)}`}); }
+    if (days <= 2){ const id = 'appt-'+a.id; out.push({id, readable:1, unread:!S.readNotifs[id], icon:'🩺', title: (days<=0 ? tr('ميعادك النهارده: ','Today: ') : days===1 ? tr('بكرة: ','Tomorrow: ') : tr('بعد يومين: ','In 2 days: ')) + esc(a.title), body: tr('الساعة ','At ') + fmtTime(a.time)}); }
   });
   const wid = 'week-'+wk;
-  out.push({id:wid, readable:1, unread:!S.readNotifs[wid], icon:'🎉', title:`انتي في الأسبوع ${ar(wk)}`, body:`البيبي دلوقتي قد ${WEEKS[wk][1]}. ${WEEKS[wk][4]}`, action:`<button class="btn-ghost btn-sm" data-page="tips">النصايح</button>`});
-  TESTS.forEach(([a,b,t],i) => { if (wk >= a && wk <= b && !S.tests[i]){ const id='test-'+i; out.push({id, readable:1, unread:!S.readNotifs[id], icon:'🧪', title:'فحص ميعاده دلوقتي', body:t, action:`<button class="btn-ghost btn-sm" data-go="appts">التفاصيل</button>`}); } });
-  if (wk >= 28 && !S.kicks.some(x => ymd(new Date(x.start)) === k)){ const id='kick-'+k; out.push({id, readable:1, unread:!S.readNotifs[id], icon:'👣', title:'ما عدّتيش ركلات البيبي النهارده', body:'خدي ساعة هادية وعدّي حركته.', action:`<button class="btn-ghost btn-sm" data-go="tools">عدّ</button>`}); }
-  if (now.getHours() >= 18 && !S.log.some(x => x.date === k)){ const id='diary-'+k; out.push({id, readable:1, unread:!S.readNotifs[id], icon:'📝', title:'سجلي يومك', body:'مزاجك وأعراضك النهارده.', action:`<button class="btn-ghost btn-sm" data-go="tools">سجلي</button>`}); }
+  out.push({id:wid, readable:1, unread:!S.readNotifs[wid], icon:'🎉', title:tr(`انتي في الأسبوع ${ar(wk)}`, `You're in week ${wk}`), body:tr(`البيبي دلوقتي قد ${WEEKS[wk][1]}. `, `Your baby is the size of ${WEEKS[wk][1]}. `) + WEEKS[wk][4], action:`<button class="btn-ghost btn-sm" data-page="tips">${tr('النصايح','Tips')}</button>`});
+  TESTS.forEach(([a,b,t],i) => { if (wk >= a && wk <= b && !S.tests[i]){ const id='test-'+i; out.push({id, readable:1, unread:!S.readNotifs[id], icon:'🧪', title:tr('فحص ميعاده دلوقتي','A test is due now'), body:t, action:`<button class="btn-ghost btn-sm" data-go="appts">${tr('التفاصيل','Details')}</button>`}); } });
+  if (wk >= 28 && !S.kicks.some(x => ymd(new Date(x.start)) === k)){ const id='kick-'+k; out.push({id, readable:1, unread:!S.readNotifs[id], icon:'👣', title:tr('ما عدّتيش ركلات البيبي النهارده','You haven\'t counted kicks today'), body:tr('خدي ساعة هادية وعدّي حركته.','Take a quiet hour and count the movements.'), action:`<button class="btn-ghost btn-sm" data-go="tools">${tr('عدّ','Count')}</button>`}); }
+  if (now.getHours() >= 18 && !S.log.some(x => x.date === k)){ const id='diary-'+k; out.push({id, readable:1, unread:!S.readNotifs[id], icon:'📝', title:tr('سجلي يومك','Log your day'), body:tr('مزاجك وأعراضك النهارده.','Your mood and symptoms today.'), action:`<button class="btn-ghost btn-sm" data-go="tools">${tr('سجلي','Log')}</button>`}); }
   return out.sort((a,b) => b.unread - a.unread);
 }
 function renderBell(){
@@ -854,32 +909,32 @@ document.addEventListener('click', e => { const b = e.target.closest('[data-page
 const ul = items => `<ul class="blist">${items.map(t=>`<li><span>${t}</span></li>`).join('')}</ul>`;
 function renderPage(){
   const cur = preg().week, w = selWeek || cur, info = WEEKS[w];
-  const weekNav = `<div class="weeknav"><button class="btn-ghost btn-sm" data-wstep="-1" ${w<=1?'disabled':''}>→ الأسبوع ${ar(Math.max(1,w-1))}</button><button class="btn-ghost btn-sm" data-wstep="1" ${w>=42?'disabled':''}>الأسبوع ${ar(Math.min(42,w+1))} ←</button></div>`;
-  const head = `<div class="card baby"><div class="fruit">${info[0]}</div><div class="stack" style="gap:2px;min-width:0"><b>الأسبوع ${ar(w)} ${w===cur?'<span class="chip rose">الأسبوع الحالي</span>':''}</b><span class="muted">${trimester(w)} · البيبي قد ${info[1]}</span></div></div>`;
+  const weekNav = `<div class="weeknav"><button class="btn-ghost btn-sm" data-wstep="-1" ${w<=1?'disabled':''}>${tr('→ الأسبوع','← Week')} ${ar(Math.max(1,w-1))}</button><button class="btn-ghost btn-sm" data-wstep="1" ${w>=42?'disabled':''}>${tr('الأسبوع','Week')} ${ar(Math.min(42,w+1))} ${tr('←','→')}</button></div>`;
+  const head = `<div class="card baby"><div class="fruit">${info[0]}</div><div class="stack" style="gap:2px;min-width:0"><b>${tr('الأسبوع','Week')} ${ar(w)} ${w===cur?`<span class="chip rose">${tr('الأسبوع الحالي','Current week')}</span>`:''}</b><span class="muted">${trimester(w)} · ${tr('البيبي قد','Baby is the size of')} ${info[1]}</span></div></div>`;
   let title = '', body = '';
   if (curPage === 'symptoms'){
-    title = `أعراض الأسبوع ${ar(w)}`;
-    body = head + `<section class="card stack"><h2>إيه اللي ممكن تحسي بيه</h2>${ul(SYM[w])}</section><section class="card stack"><h2>البيبي الأسبوع ده</h2><p>${info[3]}</p>${info[2]?`<p class="muted">الحجم التقريبي: ${info[2]}</p>`:''}</section><p class="muted">مش لازم كل الأعراض تحصل، وكل حمل مختلف عن التاني.</p>` + weekNav;
+    title = tr(`أعراض الأسبوع ${ar(w)}`, `Week ${w} symptoms`);
+    body = head + `<section class="card stack"><h2>${tr('إيه اللي ممكن تحسي بيه','What you may feel')}</h2>${ul(SYM[w])}</section><section class="card stack"><h2>${tr('البيبي الأسبوع ده','Your baby this week')}</h2><p>${info[3]}</p>${info[2]?`<p class="muted">${tr('الحجم التقريبي:','Approx. size:')} ${info[2]}</p>`:''}</section><p class="muted">${tr('مش لازم كل الأعراض تحصل، وكل حمل مختلف عن التاني.','You won\'t necessarily have all of these, and every pregnancy is different.')}</p>` + weekNav;
   } else if (curPage === 'tips'){
-    title = `نصائح الأسبوع ${ar(w)}`;
-    body = head + `<section class="card stack"><h2>نصائح ليكي</h2>${ul([info[4], ...TIPS[w]])}</section>` + weekNav;
+    title = tr(`نصائح الأسبوع ${ar(w)}`, `Week ${w} tips`);
+    body = head + `<section class="card stack"><h2>${tr('نصائح ليكي','Tips for you')}</h2>${ul([info[4], ...TIPS[w]])}</section>` + weekNav;
   } else if (curPage === 'notifs'){
-    title = 'التنبيهات';
+    title = tr('التنبيهات','Alerts');
     const list = notifItems();
-    body = list.length ? `<div class="stack">${list.map(n => `<div class="notif ${n.unread?'unread':''}"><span class="ic">${n.icon}</span><div class="body" style="flex:1;min-width:0"><b>${n.title}</b><div class="muted">${n.body}</div></div>${n.action||''}</div>`).join('')}</div>` : `<div class="empty">مفيش تنبيهات دلوقتي 💗</div>`;
+    body = list.length ? `<div class="stack">${list.map(n => `<div class="notif ${n.unread?'unread':''}"><span class="ic">${n.icon}</span><div class="body" style="flex:1;min-width:0"><b>${n.title}</b><div class="muted">${n.body}</div></div>${n.action||''}</div>`).join('')}</div>` : `<div class="empty">${tr('مفيش تنبيهات دلوقتي 💗','No alerts right now 💗')}</div>`;
     list.forEach(n => { if (n.readable) S.readNotifs[n.id] = 1; }); save();
     setTimeout(renderBell, 0);
   } else if (curPage === 'nutrition'){
-    title = 'التغذية الصحية أثناء الحمل';
+    title = tr('التغذية الصحية أثناء الحمل','Healthy eating in pregnancy');
     body = NUTRITION.map(([h,items]) => `<section class="card stack"><h2>${h}</h2>${ul(items)}</section>`).join('');
   } else if (curPage === 'changes'){
-    title = 'تغيرات الحمل والتعامل معها';
+    title = tr('تغيرات الحمل والتعامل معها','Body changes and how to cope');
     body = `<section class="card">${CHANGES.map(([h,t]) => `<div class="item qa"><div class="body"><h3>${h}</h3><p>${t}</p></div></div>`).join('')}</section>`;
   } else if (curPage === 'warning'){
-    title = 'علامات لازم تكلمي فيها الدكتور';
+    title = tr('علامات لازم تكلمي فيها الدكتور','When to call your doctor');
     const P = S.profile, tel = n => `<a href="tel:${esc(n)}" style="color:var(--rose);font-weight:600;direction:ltr;unicode-bidi:embed">${esc(n)}</a>`;
-    const contacts = [P.doctorPhone && `<div class="item"><span>🩺</span><div class="body"><b>${esc(P.doctor||'الدكتور')}</b></div>${tel(P.doctorPhone)}</div>`, P.emergency && `<div class="item"><span>☎️</span><div class="body"><b>رقم الطوارئ</b></div>${tel(P.emergency)}</div>`, P.hospital && `<div class="item"><span>🏥</span><div class="body"><b>${esc(P.hospital)}</b></div></div>`].filter(Boolean).join('');
-    body = `<div class="banner rose">لو حصلت أي علامة من دول كلمي الدكتور فوراً أو روحي الطوارئ. ما تستنيش.</div>${contacts ? `<section class="card">${contacts}</section>` : `<button class="btn-ghost" data-go="settings">ضيفي رقم الدكتور ورقم الطوارئ</button>`}<section class="card">${ul(WARN)}</section>`;
+    const contacts = [P.doctorPhone && `<div class="item"><span>🩺</span><div class="body"><b>${esc(P.doctor||tr('الدكتور','Doctor'))}</b></div>${tel(P.doctorPhone)}</div>`, P.emergency && `<div class="item"><span>☎️</span><div class="body"><b>${tr('رقم الطوارئ','Emergency contact')}</b></div>${tel(P.emergency)}</div>`, P.hospital && `<div class="item"><span>🏥</span><div class="body"><b>${esc(P.hospital)}</b></div></div>`].filter(Boolean).join('');
+    body = `<div class="banner rose">${tr('لو حصلت أي علامة من دول كلمي الدكتور فوراً أو روحي الطوارئ. ما تستنيش.','If any of these happen, call your doctor right away or go to the emergency room. Don\'t wait.')}</div>${contacts ? `<section class="card">${contacts}</section>` : `<button class="btn-ghost" data-go="settings">${tr('ضيفي رقم الدكتور ورقم الطوارئ','Add your doctor\'s and emergency numbers')}</button>`}<section class="card">${ul(WARN)}</section>`;
   }
   $('#pgTitle').textContent = title;
   $('#pgBody').innerHTML = body;
@@ -897,15 +952,25 @@ function applyTheme(t){
   const dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
   document.querySelector('meta[name=theme-color]').content = dark ? '#18141A' : '#C2496E';
   $('#themeToggle').textContent = dark ? '☀️' : '🌙';
-  $('#themeToggle').setAttribute('aria-label', dark ? 'الوضع الفاتح' : 'الوضع الغامق');
+  $('#themeToggle').setAttribute('aria-label', dark ? tr('الوضع الفاتح','Light mode') : tr('الوضع الغامق','Dark mode'));
 }
 $('#themeToggle').addEventListener('click', () => {
   const t = $('#themeToggle').textContent === '🌙' ? 'dark' : 'light';
   try{ localStorage.setItem('hamly-theme', t); }catch(_){}
-  applyTheme(t); toast(t === 'dark' ? 'الوضع الغامق 🌙' : 'الوضع الفاتح ☀️');
+  applyTheme(t); toast(t === 'dark' ? tr('الوضع الغامق 🌙','Dark mode 🌙') : tr('الوضع الفاتح ☀️','Light mode ☀️'));
 });
 $$('[data-theme-set]').forEach(b => b.addEventListener('click', () => { try{ localStorage.setItem('hamly-theme', b.dataset.themeSet); }catch(_){} applyTheme(b.dataset.themeSet); }));
 try { applyTheme(localStorage.getItem('hamly-theme') || 'auto'); } catch(_){ applyTheme('auto'); }
+
+/* ---------- Language ---------- */
+$$('[data-lang-set]').forEach(b => {
+  b.setAttribute('aria-pressed', b.dataset.langSet === LANG);
+  b.addEventListener('click', () => {
+    if (b.dataset.langSet === LANG) return;
+    try { localStorage.setItem('hamly-lang', b.dataset.langSet); } catch(_){}
+    location.reload();
+  });
+});
 
 let weekbarScrolled = false;
 function scrollWeekbar(){ if (weekbarScrolled) return; const c = $('#weekbar .cur'); if (c){ c.scrollIntoView({inline:'center',block:'nearest'}); weekbarScrolled = true; } }
@@ -919,14 +984,14 @@ function upcomingAppts(){
 /* ---------- Two-tap delete ---------- */
 function armed(btn){
   if (btn.classList.contains('armed')) return true;
-  btn.classList.add('armed'); const old = btn.textContent; btn.textContent = 'متأكدة؟';
+  btn.classList.add('armed'); const old = btn.textContent; btn.textContent = tr('متأكدة؟','Sure?');
   setTimeout(()=>{ btn.classList.remove('armed'); btn.textContent = old; }, 3000);
   return false;
 }
 document.addEventListener('click', e => {
   let b;
-  if ((b = e.target.closest('[data-del-med]')) && armed(b)){ S.meds = S.meds.filter(m => m.id !== b.dataset.delMed); save(); render(); toast('اتحذف الدوا'); }
-  if ((b = e.target.closest('[data-del-appt]')) && armed(b)){ S.appts = S.appts.filter(a => a.id !== b.dataset.delAppt); save(); render(); toast('اتحذف الميعاد'); }
+  if ((b = e.target.closest('[data-del-med]')) && armed(b)){ S.meds = S.meds.filter(m => m.id !== b.dataset.delMed); save(); render(); toast(tr('اتحذف الدوا','Medicine deleted')); }
+  if ((b = e.target.closest('[data-del-appt]')) && armed(b)){ S.appts = S.appts.filter(a => a.id !== b.dataset.delAppt); save(); render(); toast(tr('اتحذف الميعاد','Appointment deleted')); }
   if ((b = e.target.closest('[data-edit]'))) editMed(b.dataset.edit);
 });
 document.addEventListener('change', e => {
@@ -940,18 +1005,18 @@ const DEFAULT_TIMES = {1:['09:00'],2:['09:00','21:00'],3:['08:00','14:00','20:00
 function drawTimes(vals){
   const n = +$('#mTimesCount').value;
   vals = vals || DEFAULT_TIMES[n];
-  $('#mTimes').innerHTML = Array.from({length:n},(_,i)=>`<label>الميعاد ${ar(i+1)}<input type="time" class="mTime" id="mTime${i}" value="${vals[i]||DEFAULT_TIMES[n][i]}" required></label>`).join('');
+  $('#mTimes').innerHTML = Array.from({length:n},(_,i)=>`<label>${tr('الميعاد','Time')} ${ar(i+1)}<input type="time" class="mTime" id="mTime${i}" value="${vals[i]||DEFAULT_TIMES[n][i]}" required></label>`).join('');
 }
 $('#mTimesCount').addEventListener('change', () => drawTimes());
 function resetMedForm(){
   $('#medForm').reset(); $('#mId').value=''; $('#mStart').value = ymd(today0());
-  $('#medFormTitle').textContent = 'إضافة دوا'; $('#medCancel').hidden = true; drawTimes();
+  $('#medFormTitle').textContent = tr('إضافة دوا','Add a medicine'); $('#medCancel').hidden = true; drawTimes();
 }
 function editMed(id){
   const m = S.meds.find(x => x.id === id); if (!m) return;
   $('#mId').value = m.id; $('#mName').value = m.name; $('#mDose').value = m.dose||''; $('#mStart').value = m.start;
   $('#mDays').value = m.days||''; $('#mNotes').value = m.notes||''; $('#mTimesCount').value = m.times.length; drawTimes(m.times);
-  $('#medFormTitle').textContent = 'تعديل ' + m.name; $('#medCancel').hidden = false;
+  $('#medFormTitle').textContent = tr('تعديل ','Edit ') + m.name; $('#medCancel').hidden = false;
   $('#medForm').scrollIntoView({behavior:'smooth'});
 }
 $('#medCancel').addEventListener('click', resetMedForm);
@@ -961,14 +1026,14 @@ $('#medForm').addEventListener('submit', e => {
     days: +$('#mDays').value || 0, notes: $('#mNotes').value.trim(), times: $$('.mTime').map(i => i.value).sort() };
   const i = S.meds.findIndex(x => x.id === m.id);
   if (i >= 0) S.meds[i] = m; else S.meds.push(m);
-  save(); resetMedForm(); render(); toast('اتحفظ الدوا ✓ هنفكرك في مواعيده');
+  save(); resetMedForm(); render(); toast(tr('اتحفظ الدوا ✓ هنفكرك في مواعيده','Medicine saved ✓ We\'ll remind you on time'));
 });
 
 /* ---------- Appointments ---------- */
 $('#apptForm').addEventListener('submit', e => {
   e.preventDefault();
   S.appts.push({id:uid(), title:$('#aTitle').value.trim(), date:$('#aDate').value, time:$('#aTime').value, notes:$('#aNotes').value.trim()});
-  save(); $('#apptForm').reset(); $('#aTime').value='18:00'; render(); toast('اتحفظ الميعاد ✓');
+  save(); $('#apptForm').reset(); $('#aTime').value='18:00'; render(); toast(tr('اتحفظ الميعاد ✓','Appointment saved ✓'));
 });
 
 /* ---------- Tools: sub tabs ---------- */
@@ -981,7 +1046,8 @@ $$('[data-sub]').forEach(b => b.addEventListener('click', () => {
 const DSYMS = ['غثيان','ترجيع','صداع','تعب','دوخة','حرقان','إمساك','تورم','ألم ضهر','تقلصات','أرق','قلق','نزيف بسيط','إفرازات'];
 const MOODS = ['','😣','😕','😐','🙂','😍'];
 let dMood = 0, dSel = new Set();
-$('#dSym').innerHTML = DSYMS.map(s => `<button type="button" data-dsym="${s}" aria-pressed="false">${s}</button>`).join('');
+const dsymLabel = s => { const i = DSYMS.indexOf(s); return X && i >= 0 ? X.DSYMS[i] : s; };
+$('#dSym').innerHTML = DSYMS.map(s => `<button type="button" data-dsym="${s}" aria-pressed="false">${dsymLabel(s)}</button>`).join('');
 $('#dMood').addEventListener('click', e => { const b = e.target.closest('[data-mood]'); if (!b) return; dMood = +b.dataset.mood; paintDiaryForm(); });
 $('#dSym').addEventListener('click', e => { const b = e.target.closest('[data-dsym]'); if (!b) return; const s = b.dataset.dsym; dSel.has(s) ? dSel.delete(s) : dSel.add(s); paintDiaryForm(); });
 $('#dDate').addEventListener('change', () => loadDiary($('#dDate').value));
@@ -1003,18 +1069,18 @@ $('#sub-diary').addEventListener('submit', ev => {
   const e = {date:$('#dDate').value, mood:dMood, sym:[...dSel], sys:+$('#dSys').value||0, dia:+$('#dDia').value||0, sugar:+$('#dSugar').value||0, sugarType:$('#dSugarType').value, note:$('#dNote').value.trim()};
   S.log = S.log.filter(x => x.date !== e.date); S.log.push(e); S.log.sort((a,b)=>b.date.localeCompare(a.date)); save();
   let warn = '';
-  if (bpFlag(e)) warn += `<div class="callout bad">الضغط ${ar(e.sys)}/${ar(e.dia)} عالي. كلمي الدكتور النهارده، وفوراً لو معاه صداع شديد أو زغللة أو تورم.</div>`;
-  if (sugarFlag(e)) warn += `<div class="callout bad">قراية السكر أعلى من المعتاد في الحمل. ورّيها للدكتور.</div>`;
-  if (e.sym.includes('نزيف بسيط')) warn += `<div class="callout bad">أي نزيف في الحمل لازم تبلّغي بيه الدكتور.</div>`;
+  if (bpFlag(e)) warn += `<div class="callout bad">${tr(`الضغط ${ar(e.sys)}/${ar(e.dia)} عالي. كلمي الدكتور النهارده، وفوراً لو معاه صداع شديد أو زغللة أو تورم.`, `Blood pressure ${e.sys}/${e.dia} is high. Call your doctor today — right away if you also have a bad headache, blurry vision or swelling.`)}</div>`;
+  if (sugarFlag(e)) warn += `<div class="callout bad">${tr('قراية السكر أعلى من المعتاد في الحمل. ورّيها للدكتور.','This blood sugar reading is higher than usual for pregnancy. Show it to your doctor.')}</div>`;
+  if (e.sym.includes('نزيف بسيط')) warn += `<div class="callout bad">${tr('أي نزيف في الحمل لازم تبلّغي بيه الدكتور.','Any bleeding in pregnancy should be reported to your doctor.')}</div>`;
   $('#dWarn').innerHTML = warn;
-  renderDiary(); toast('اتحفظ اليوم ✓');
+  renderDiary(); toast(tr('اتحفظ اليوم ✓','Day saved ✓'));
 });
 function renderDiary(){
-  $('#dList').innerHTML = S.log.length ? '<h3 style="margin-top:8px">الأيام اللي فاتت</h3>' + S.log.slice(0,14).map(e => {
+  $('#dList').innerHTML = S.log.length ? `<h3 style="margin-top:8px">${tr('الأيام اللي فاتت','Previous days')}</h3>` + S.log.slice(0,14).map(e => {
     const bits = [];
-    if (e.sys) bits.push(`ضغط ${ar(e.sys)}/${ar(e.dia)}${bpFlag(e)?' ⚠️':''}`);
-    if (e.sugar) bits.push(`سكر ${ar(e.sugar)}${sugarFlag(e)?' ⚠️':''}`);
-    return `<div class="item" data-dday="${e.date}" style="cursor:pointer"><span style="font-size:1.6rem">${MOODS[e.mood]||'📝'}</span><div class="body"><b>${fmtShort(parse(e.date))}</b>${e.sym.length?`<div class="muted">${e.sym.join('، ')}</div>`:''}${bits.length?`<div class="muted">${bits.join(' · ')}</div>`:''}${e.note?`<div>${esc(e.note)}</div>`:''}</div></div>`;
+    if (e.sys) bits.push(`${tr('ضغط','BP')} ${ar(e.sys)}/${ar(e.dia)}${bpFlag(e)?' ⚠️':''}`);
+    if (e.sugar) bits.push(`${tr('سكر','Sugar')} ${ar(e.sugar)}${sugarFlag(e)?' ⚠️':''}`);
+    return `<div class="item" data-dday="${e.date}" style="cursor:pointer"><span style="font-size:1.6rem">${MOODS[e.mood]||'📝'}</span><div class="body"><b>${fmtShort(parse(e.date))}</b>${e.sym.length?`<div class="muted">${e.sym.map(dsymLabel).join(tr('، ',', '))}</div>`:''}${bits.length?`<div class="muted">${bits.join(' · ')}</div>`:''}${e.note?`<div>${esc(e.note)}</div>`:''}</div></div>`;
   }).join('') : '';
 }
 document.addEventListener('click', e => { const r = e.target.closest('[data-dday]'); if (r){ loadDiary(r.dataset.dday); $('#sub-diary').scrollIntoView({behavior:'smooth'}); } });
@@ -1023,25 +1089,25 @@ document.addEventListener('click', e => { const r = e.target.closest('[data-dday
 let kick = null, kickTick;
 const mmss = ms => { const s = Math.floor(ms/1000); return `${ar(Math.floor(s/60))}:${ar(pad(s%60))}`; };
 $('#kickBtn').addEventListener('click', () => {
-  if (!kick){ kick = {start: Date.now(), count: 0}; $('#kickBtn').textContent = 'اتحرك! 👣'; $('#kickEnd').hidden = false; kickTick = setInterval(renderKicks, 1000); }
-  else { kick.count++; if (navigator.vibrate) navigator.vibrate(30); if (kick.count === 10) toast('١٠ حركات! كده تمام 💗'); }
+  if (!kick){ kick = {start: Date.now(), count: 0}; $('#kickBtn').textContent = tr('اتحرك! 👣','Moved! 👣'); $('#kickEnd').hidden = false; kickTick = setInterval(renderKicks, 1000); }
+  else { kick.count++; if (navigator.vibrate) navigator.vibrate(30); if (kick.count === 10) toast(tr('١٠ حركات! كده تمام 💗','10 movements! All good 💗')); }
   renderKicks();
 });
 $('#kickEnd').addEventListener('click', () => {
-  if (kick && kick.count){ S.kicks.unshift({start:kick.start, end:Date.now(), count:kick.count}); S.kicks = S.kicks.slice(0,30); save(); toast('اتحفظت الجلسة'); }
-  kick = null; clearInterval(kickTick); $('#kickBtn').textContent = 'ابدأي'; $('#kickEnd').hidden = true; renderKicks();
+  if (kick && kick.count){ S.kicks.unshift({start:kick.start, end:Date.now(), count:kick.count}); S.kicks = S.kicks.slice(0,30); save(); toast(tr('اتحفظت الجلسة','Session saved')); }
+  kick = null; clearInterval(kickTick); $('#kickBtn').textContent = tr('ابدأي','Start'); $('#kickEnd').hidden = true; renderKicks();
 });
 function renderKicks(){
   $('#kickCount').textContent = ar(kick ? kick.count : 0);
-  $('#kickTimer').textContent = kick ? `بقالك ${mmss(Date.now()-kick.start)}` : 'اضغطي «ابدأي» عشان تبدئي العد';
-  $('#kickList').innerHTML = S.kicks.length ? '<h3 style="margin-top:8px">آخر الجلسات</h3>' + S.kicks.slice(0,7).map(k => `<div class="item"><div class="body">${fmtShort(new Date(k.start))} · ${new Date(k.start).toLocaleTimeString('ar-EG',{hour:'numeric',minute:'2-digit'})}</div><b>${ar(k.count)} حركة في ${mmss(k.end-k.start)}</b></div>`).join('') : '';
+  $('#kickTimer').textContent = kick ? tr('بقالك ','Elapsed ') + mmss(Date.now()-kick.start) : tr('اضغطي «ابدأي» عشان تبدئي العد','Tap “Start” to begin counting');
+  $('#kickList').innerHTML = S.kicks.length ? `<h3 style="margin-top:8px">${tr('آخر الجلسات','Recent sessions')}</h3>` + S.kicks.slice(0,7).map(k => `<div class="item"><div class="body">${fmtShort(new Date(k.start))} · ${new Date(k.start).toLocaleTimeString(LOC,{hour:'numeric',minute:'2-digit'})}</div><b>${tr(`${ar(k.count)} حركة في ${mmss(k.end-k.start)}`, `${k.count} moves in ${mmss(k.end-k.start)}`)}</b></div>`).join('') : '';
 }
 
 /* Contractions */
 let cur = null, cTick;
 $('#contrBtn').addEventListener('click', () => {
-  if (!cur){ cur = Date.now(); $('#contrBtn').textContent = 'خلصت الطلقة'; cTick = setInterval(()=>{ $('#contrBtn').textContent = 'خلصت الطلقة ' + mmss(Date.now()-cur); }, 1000); }
-  else { S.contr.unshift({s:cur, e:Date.now()}); S.contr = S.contr.slice(0,60); cur = null; clearInterval(cTick); $('#contrBtn').textContent = 'بدأت الطلقة'; save(); renderContr(); }
+  if (!cur){ cur = Date.now(); $('#contrBtn').textContent = tr('خلصت الطلقة','Contraction ended'); cTick = setInterval(()=>{ $('#contrBtn').textContent = tr('خلصت الطلقة ','Ended ') + mmss(Date.now()-cur); }, 1000); }
+  else { S.contr.unshift({s:cur, e:Date.now()}); S.contr = S.contr.slice(0,60); cur = null; clearInterval(cTick); $('#contrBtn').textContent = tr('بدأت الطلقة','Contraction started'); save(); renderContr(); }
 });
 $('#contrClear').addEventListener('click', e => { if (armed(e.currentTarget)){ S.contr = []; save(); renderContr(); } });
 function renderContr(){
@@ -1051,7 +1117,7 @@ function renderContr(){
   $('#cAvgDur').textContent = recent.length ? mmss(recent.reduce((a,x)=>a+(x.e-x.s),0)/recent.length) : '—';
   const gaps = recent.slice(0,-1).map((x,i)=> x.s - recent[i+1].s);
   $('#cAvgGap').textContent = gaps.length ? mmss(gaps.reduce((a,b)=>a+b,0)/gaps.length) : '—';
-  $('#contrList').innerHTML = c.slice(0,10).map((x,i)=>`<div class="item"><div class="body">${new Date(x.s).toLocaleTimeString('ar-EG',{hour:'numeric',minute:'2-digit'})}</div><span class="muted">المدة ${mmss(x.e-x.s)}${c[i+1]?` · بعد ${mmss(x.s-c[i+1].s)}`:''}</span></div>`).join('');
+  $('#contrList').innerHTML = c.slice(0,10).map((x,i)=>`<div class="item"><div class="body">${new Date(x.s).toLocaleTimeString(LOC,{hour:'numeric',minute:'2-digit'})}</div><span class="muted">${tr('المدة','Length')} ${mmss(x.e-x.s)}${c[i+1]?` · ${tr('بعد','after')} ${mmss(x.s-c[i+1].s)}`:''}</span></div>`).join('');
 }
 
 /* Weight */
@@ -1059,14 +1125,14 @@ $('#wForm').addEventListener('submit', e => {
   e.preventDefault();
   S.weights = S.weights.filter(w => w.date !== $('#wDate').value);
   S.weights.push({date:$('#wDate').value, kg:+$('#wKg').value});
-  S.weights.sort((a,b)=>a.date.localeCompare(b.date)); save(); $('#wKg').value=''; renderWeight(); toast('اتسجل الوزن');
+  S.weights.sort((a,b)=>a.date.localeCompare(b.date)); save(); $('#wKg').value=''; renderWeight(); toast(tr('اتسجل الوزن','Weight logged'));
 });
 /* Healthy weight-gain range by pre-pregnancy BMI (IOM 2009 guidance, single pregnancy) */
 function weightAdvice(){
   const {height:h, preW} = S.profile;
-  if (!h || !preW) return `<div class="callout">ضيفي <b>الطول</b> و<b>الوزن قبل الحمل</b> في البروفايل، وهنقولك الزيادة الطبيعية ليكي في كل أسبوع. <button type="button" class="btn-ghost btn-sm" data-go="settings">افتحي البروفايل</button></div>`;
+  if (!h || !preW) return `<div class="callout">${tr('ضيفي <b>الطول</b> و<b>الوزن قبل الحمل</b> في البروفايل، وهنقولك الزيادة الطبيعية ليكي في كل أسبوع.','Add your <b>height</b> and <b>weight before pregnancy</b> in My details, and we\'ll show your healthy gain for each week.')} <button type="button" class="btn-ghost btn-sm" data-go="settings">${tr('افتحي البروفايل','Open My details')}</button></div>`;
   const bmi = preW / Math.pow(h/100, 2);
-  const [cat, lo, hi] = bmi < 18.5 ? ['أقل من الطبيعي',12.5,18] : bmi < 25 ? ['طبيعي',11.5,16] : bmi < 30 ? ['زيادة وزن',7,11.5] : ['سمنة',5,9];
+  const [cat, lo, hi] = bmi < 18.5 ? [tr('أقل من الطبيعي','underweight'),12.5,18] : bmi < 25 ? [tr('طبيعي','healthy'),11.5,16] : bmi < 30 ? [tr('زيادة وزن','overweight'),7,11.5] : [tr('سمنة','obese'),5,9];
   const w = preg().week;
   const eLo = w <= 13 ? 0.5*w/13 : 0.5 + (lo-0.5)*(Math.min(w,40)-13)/27;
   const eHi = w <= 13 ? 2*w/13 : 2 + (hi-2)*(Math.min(w,40)-13)/27;
@@ -1075,20 +1141,20 @@ function weightAdvice(){
   const last = S.weights.at(-1);
   if (last){
     const g = last.kg - preW;
-    status = g < eLo - 0.5 ? `<p>زيادتك دلوقتي <b>${f(g)} كجم</b>، أقل من المتوقع شوية. اتكلمي مع الدكتور عن الأكل.</p>`
-           : g > eHi + 0.5 ? `<p>زيادتك دلوقتي <b>${f(g)} كجم</b>، أكتر من المتوقع شوية. ركزي على الأكل الصحي والمشي، واسألي الدكتور.</p>`
-           : `<p>زيادتك دلوقتي <b>${f(g)} كجم</b>، في المعدل الطبيعي 👏</p>`;
+    status = g < eLo - 0.5 ? tr(`<p>زيادتك دلوقتي <b>${f(g)} كجم</b>، أقل من المتوقع شوية. اتكلمي مع الدكتور عن الأكل.</p>`, `<p>Your gain so far is <b>${f(g)} kg</b>, a bit below expected. Talk to your doctor about your diet.</p>`)
+           : g > eHi + 0.5 ? tr(`<p>زيادتك دلوقتي <b>${f(g)} كجم</b>، أكتر من المتوقع شوية. ركزي على الأكل الصحي والمشي، واسألي الدكتور.</p>`, `<p>Your gain so far is <b>${f(g)} kg</b>, a bit above expected. Focus on healthy food and walking, and ask your doctor.</p>`)
+           : tr(`<p>زيادتك دلوقتي <b>${f(g)} كجم</b>، في المعدل الطبيعي 👏</p>`, `<p>Your gain so far is <b>${f(g)} kg</b>, right on track 👏</p>`);
   }
   const cls = !last ? '' : (last.kg - preW < eLo - 0.5 || last.kg - preW > eHi + 0.5) ? 'bad' : 'ok';
-  return `<div class="callout ${cls} stack" style="gap:4px"><p>مؤشر كتلة الجسم قبل الحمل: <b>${f(bmi)}</b> (${cat})</p><p>الزيادة الطبيعية طول الحمل: <b>${ar(lo)}–${ar(hi)} كجم</b></p><p>المتوقع لحد الأسبوع ${ar(w)}: <b>${f(eLo)}–${f(eHi)} كجم</b></p>${status}</div>`;
+  return `<div class="callout ${cls} stack" style="gap:4px"><p>${tr('مؤشر كتلة الجسم قبل الحمل:','BMI before pregnancy:')} <b>${f(bmi)}</b> (${cat})</p><p>${tr('الزيادة الطبيعية طول الحمل:','Healthy total gain:')} <b>${ar(lo)}–${ar(hi)} ${tr('كجم','kg')}</b></p><p>${tr('المتوقع لحد الأسبوع','Expected by week')} ${ar(w)}: <b>${f(eLo)}–${f(eHi)} ${tr('كجم','kg')}</b></p>${status}</div>`;
 }
 function renderWeight(){
   const W = S.weights;
   $('#wAdvice').innerHTML = weightAdvice();
-  if (!W.length){ $('#wSummary').textContent = 'سجلي وزنك مرة في الأسبوع في نفس اليوم والوقت.'; $('#wChart').innerHTML=''; $('#wList').innerHTML=''; return; }
+  if (!W.length){ $('#wSummary').textContent = tr('سجلي وزنك مرة في الأسبوع في نفس اليوم والوقت.','Log your weight once a week, same day and time.'); $('#wChart').innerHTML=''; $('#wList').innerHTML=''; return; }
   const base = S.profile.preW || W[0].kg;
   const diff = (W[W.length-1].kg - base).toFixed(1);
-  $('#wSummary').textContent = `الزيادة ${S.profile.preW ? 'من قبل الحمل' : 'من أول تسجيل'}: ${ar(diff)} كجم`;
+  $('#wSummary').textContent = tr(`الزيادة ${S.profile.preW ? 'من قبل الحمل' : 'من أول تسجيل'}: ${ar(diff)} كجم`, `Gain ${S.profile.preW ? 'since before pregnancy' : 'since first entry'}: ${diff} kg`);
   if (W.length > 1){
     const min = Math.min(...W.map(w=>w.kg)) - 1, max = Math.max(...W.map(w=>w.kg)) + 1, w = 320, h = 120;
     const t0 = parse(W[0].date).getTime(), t1 = parse(W[W.length-1].date).getTime() || t0+1;
@@ -1096,12 +1162,12 @@ function renderWeight(){
     const line = pts.map(p=>p.join(',')).join(' ');
     $('#wChart').innerHTML = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;direction:ltr"><polyline points="${line}" fill="none" stroke="var(--rose)" stroke-width="2.5" stroke-linejoin="round"/>${pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="var(--rose)"/>`).join('')}<text x="${pts.at(-1)[0]}" y="${pts.at(-1)[1]-8}" font-size="11" text-anchor="middle" fill="var(--ink)">${W.at(-1).kg}</text></svg>`;
   } else $('#wChart').innerHTML = '';
-  $('#wList').innerHTML = W.slice().reverse().slice(0,8).map(x=>`<div class="item"><div class="body">${fmtShort(parse(x.date))}</div><b>${ar(x.kg)} كجم</b></div>`).join('');
+  $('#wList').innerHTML = W.slice().reverse().slice(0,8).map(x=>`<div class="item"><div class="body">${fmtShort(parse(x.date))}</div><b>${ar(x.kg)} ${tr('كجم','kg')}</b></div>`).join('');
 }
 
 /* Water */
 function renderWater(){ $('#waterCount').textContent = ar(S.water[ymd(today0())]||0); }
-$('#waterAdd').addEventListener('click', () => { const k = ymd(today0()); S.water[k] = (S.water[k]||0)+1; save(); renderWater(); if (S.water[k]===10) toast('برافو! خلصتي هدف المية 💧'); });
+$('#waterAdd').addEventListener('click', () => { const k = ymd(today0()); S.water[k] = (S.water[k]||0)+1; save(); renderWater(); if (S.water[k]===10) toast(tr('برافو! خلصتي هدف المية 💧','Well done! Water goal reached 💧')); });
 $('#waterSub').addEventListener('click', () => { const k = ymd(today0()); S.water[k] = Math.max(0,(S.water[k]||0)-1); save(); renderWater(); });
 
 /* ---------- Notifications (while app is open / in background) ---------- */
@@ -1109,29 +1175,48 @@ let swReg = null;
 if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').then(r => swReg = r).catch(()=>{});
 async function notify(title, body, tag){
   if (!('Notification' in window) || Notification.permission !== 'granted') return false;
-  const opts = {body, tag, icon:'icon-192.png', badge:'badge.png', dir:'rtl', lang:'ar', vibrate:[200,100,200]};
+  const opts = {body, tag, icon:'icon-192.png', badge:'badge.png', dir:EN?'ltr':'rtl', lang:LANG, vibrate:[200,100,200]};
   try { if (swReg) { await swReg.showNotification(title, opts); return true; } new Notification(title, opts); return true; } catch(e){ return false; }
 }
 function renderSettings(){
   let st;
-  if (!('Notification' in window)) st = 'المتصفح ده مش بيدعم الإشعارات. على الآيفون لازم تضيفي التطبيق للشاشة الرئيسية الأول (Share ← Add to Home Screen).';
-  else if (Notification.permission === 'granted') st = 'الإشعارات شغالة ✓ هنفكرك بالأدوية والأسبوع الجديد طول ما التطبيق مفتوح أو في الخلفية.';
-  else if (Notification.permission === 'denied') st = 'الإشعارات مقفولة. افتحيها من إعدادات المتصفح للموقع ده.';
-  else st = 'الإشعارات لسه مش متفعلة.';
+  if (!('Notification' in window)) st = tr('المتصفح ده مش بيدعم الإشعارات. على الآيفون لازم تضيفي التطبيق للشاشة الرئيسية الأول (Share ← Add to Home Screen).','This browser doesn\'t support notifications. On iPhone, add the app to your Home Screen first (Share → Add to Home Screen).');
+  else if (Notification.permission === 'granted') st = tr('الإشعارات شغالة ✓ هنفكرك بالأدوية والأسبوع الجديد طول ما التطبيق مفتوح أو في الخلفية.','Notifications are on ✓ We\'ll remind you about medicines and each new week while the app is open or in the background.');
+  else if (Notification.permission === 'denied') st = tr('الإشعارات مقفولة. افتحيها من إعدادات المتصفح للموقع ده.','Notifications are blocked. Allow them for this site in your browser settings.');
+  else st = tr('الإشعارات لسه مش متفعلة.','Notifications aren\'t turned on yet.');
   $('#notifState').textContent = st;
   $('#notifBtn').hidden = !('Notification' in window) || Notification.permission === 'granted';
-  if (S.lmp) $('#pDue').textContent = 'ميعاد الولادة المتوقع: ' + fmtDate(addDays(parse(S.lmp),280));
+  if (S.lmp) $('#pDue').textContent = tr('ميعاد الولادة المتوقع: ','Due date: ') + fmtDate(addDays(parse(S.lmp),280));
+  const on = 'Notification' in window && Notification.permission === 'granted';
+  $('#notifChip').textContent = on ? tr('شغالة ✓','On ✓') : tr('مقفولة','Off'); $('#notifChip').className = on ? 'chip' : 'chip warn';
+  if (S.lmp){
+    const a = ageOf(S.profile.dob), p = preg();
+    $('#acctAvatar').textContent = S.name ? S.name.trim()[0] : '🤰';
+    $('#acctName').textContent = S.name || tr('بياناتي','My details');
+    $('#acctSub').textContent = [a !== null && tr(`${ar(a)} سنة`, `${a} years`), `${tr('الأسبوع','Week')} ${ar(p.week)}`, S.profile.baby && tr(`في انتظار ${S.profile.baby}`, `Waiting for ${S.profile.baby}`)].filter(Boolean).join(' · ');
+  }
 }
-const PF = {pAge:'age',pHeight:'height',pPreW:'preW',pBlood:'blood',pFirst:'first',pBaby:'baby',pSex:'sex',pDoctor:'doctor',pDoctorPhone:'doctorPhone',pHospital:'hospital',pEmergency:'emergency'};
+function ageOf(dob){
+  if (!dob) return null;
+  const b = parse(dob), t = today0();
+  let a = t.getFullYear() - b.getFullYear();
+  if (t.getMonth() < b.getMonth() || (t.getMonth() === b.getMonth() && t.getDate() < b.getDate())) a--;
+  return a >= 0 && a < 100 ? a : null;
+}
+const isBirthday = dob => { if (!dob) return false; const b = parse(dob), t = today0(); return b.getMonth() === t.getMonth() && b.getDate() === t.getDate(); };
+function showAge(){ const a = ageOf($('#pDob').value); $('#pAgeOut').textContent = a !== null ? tr(`السن: ${ar(a)} سنة`, `Age: ${a}`) : ''; }
+$('#pDob').addEventListener('change', showAge);
+const PF = {pDob:'dob',pHeight:'height',pPreW:'preW',pBlood:'blood',pFirst:'first',pBaby:'baby',pSex:'sex',pDoctor:'doctor',pDoctorPhone:'doctorPhone',pHospital:'hospital',pEmergency:'emergency'};
 function fillProfile(){
   $('#pName').value = S.name || ''; $('#pLmp').value = S.lmp || '';
   Object.entries(PF).forEach(([id,k]) => $('#'+id).value = S.profile[k] ?? '');
+  showAge();
 }
 $('#notifBtn').addEventListener('click', async () => {
   const r = await Notification.requestPermission(); renderSettings();
-  if (r === 'granted'){ notify('حملي', 'تمام! الإشعارات اتفعلت 💗', 'welcome'); }
+  if (r === 'granted'){ notify(tr('حملي','Hamly'), tr('تمام! الإشعارات اتفعلت 💗','Done! Notifications are on 💗'), 'welcome'); }
 });
-$('#notifTest').addEventListener('click', async () => { if (!(await notify('ميعاد الدوا 💊','ده إشعار تجربة. كده هيوصلك التذكير.','test'))) toast('فعّلي الإشعارات الأول'); });
+$('#notifTest').addEventListener('click', async () => { if (!(await notify(tr('ميعاد الدوا 💊','Medicine time 💊'), tr('ده إشعار تجربة. كده هيوصلك التذكير.','This is a test. Your reminders will look like this.'),'test'))) toast(tr('فعّلي الإشعارات الأول','Turn on notifications first')); });
 
 function checkReminders(){
   if (!S.lmp) return;
@@ -1142,16 +1227,16 @@ function checkReminders(){
     const done = (S.taken[k]||{})[x.key];
     if (!done && x.t <= hm && !N[x.key]){
       const late = (now - new Date(`${k}T${x.t}`))/60000;
-      if (late < 60) notify(`ميعاد ${x.m.name} 💊`, `${x.m.dose || 'الجرعة'} — الساعة ${fmtTime(x.t)}${x.m.notes ? ' · '+x.m.notes : ''}`, x.key);
+      if (late < 60) notify(tr(`ميعاد ${x.m.name} 💊`, `Time for ${x.m.name} 💊`), `${x.m.dose || tr('الجرعة','Your dose')} — ${tr('الساعة','at')} ${fmtTime(x.t)}${x.m.notes ? ' · '+x.m.notes : ''}`, x.key);
       N[x.key] = 1; save();
     }
   });
   upcomingAppts().forEach(a => {
     const at = new Date(`${a.date}T${a.time}`), mins = (at - now)/60000, key = 'appt-'+a.id;
-    if (mins <= 120 && mins > 0 && !N[key]){ notify(`ميعاد النهارده: ${a.title}`, `الساعة ${fmtTime(a.time)}`, key); N[key]=1; save(); }
+    if (mins <= 120 && mins > 0 && !N[key]){ notify(tr('ميعاد النهارده: ','Appointment today: ') + a.title, tr('الساعة ','At ') + fmtTime(a.time), key); N[key]=1; save(); }
   });
   const wk = preg().week, wkKey = 'week-'+wk;
-  if (!S.notified[wkKey]){ S.notified[wkKey] = 1; save(); if (wk > 1) notify(`انتي في الأسبوع ${ar(wk)} 🎉`, `البيبي دلوقتي قد ${WEEKS[wk][1]}. ${WEEKS[wk][4]}`, wkKey); }
+  if (!S.notified[wkKey]){ S.notified[wkKey] = 1; save(); if (wk > 1) notify(tr(`انتي في الأسبوع ${ar(wk)} 🎉`, `You're in week ${wk} 🎉`), tr(`البيبي دلوقتي قد ${WEEKS[wk][1]}. `, `Your baby is the size of ${WEEKS[wk][1]}. `) + WEEKS[wk][4], wkKey); }
   // prune old notify logs
   Object.keys(S.notified).forEach(d => { if (/^\d{4}-/.test(d) && d < ymd(addDays(today0(),-3))) delete S.notified[d]; });
 }
@@ -1179,7 +1264,7 @@ function weekEvents(){
   const out = [];
   for (let w = Math.max(2,cw); w <= 42; w++){
     const d = ymd(addDays(lmp,(w-1)*7)), info = WEEKS[w];
-    out.push(vevent({uid:`week-${S.lmp}-${w}`, start:icsDT(d,'10:00'), end:icsDT(d,'10:15'), title:`🤰 انتي في الأسبوع ${w} من الحمل`, desc:`البيبي دلوقتي قد ${info[1]} ${info[2]}\n${info[3]}\nنصيحة: ${info[4]}`}));
+    out.push(vevent({uid:`week-${S.lmp}-${w}`, start:icsDT(d,'10:00'), end:icsDT(d,'10:15'), title:tr(`🤰 انتي في الأسبوع ${w} من الحمل`, `🤰 You're in week ${w} of pregnancy`), desc:tr(`البيبي دلوقتي قد ${info[1]} ${info[2]}\n${info[3]}\nنصيحة: ${info[4]}`, `Your baby is the size of ${info[1]} (${info[2]})\n${info[3]}\nTip: ${info[4]}`)}));
   }
   return out;
 }
@@ -1187,12 +1272,12 @@ function apptEvents(){
   return upcomingAppts().map(a => vevent({uid:`appt-${a.id}`, start:icsDT(a.date,a.time), end:icsDT(a.date,plus(a.time,60)), title:`🩺 ${a.title}`, desc:a.notes, alarms:['P1D','PT2H']}));
 }
 function downloadIcs(events, name){
-  if (!events.length){ toast('مفيش حاجة تتضاف للتقويم لسه'); return; }
-  const ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Hamly//AR\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:حملي\r\n${events.join('')}END:VCALENDAR\r\n`;
+  if (!events.length){ toast(tr('مفيش حاجة تتضاف للتقويم لسه','Nothing to add to the calendar yet')); return; }
+  const ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Hamly//AR\r\nCALSCALE:GREGORIAN\r\nX-WR-CALNAME:${tr('حملي','Hamly')}\r\n${events.join('')}END:VCALENDAR\r\n`;
   const blob = new Blob([ics], {type:'text/calendar;charset=utf-8'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name + '.ics';
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
-  toast('افتحي الملف واختاري «إضافة للتقويم»');
+  toast(tr('افتحي الملف واختاري «إضافة للتقويم»','Open the file and choose “Add to Calendar”'));
 }
 $('#icsMeds').onclick = $('#icsMeds2').onclick = () => downloadIcs(medEvents(), 'hamly-medicines');
 $('#icsAppts').onclick = $('#icsAppts2').onclick = () => downloadIcs(apptEvents(), 'hamly-appointments');
@@ -1204,7 +1289,7 @@ $('#profileForm').addEventListener('submit', e => {
   e.preventDefault();
   S.name = $('#pName').value.trim(); S.lmp = $('#pLmp').value;
   Object.entries(PF).forEach(([id,k]) => { const v = $('#'+id).value.trim(); S.profile[k] = $('#'+id).type === 'number' ? (v ? +v : '') : v; });
-  save(); render(); toast('اتحفظ البروفايل ✓');
+  save(); render(); toast(tr('اتحفظ البروفايل ✓','Details saved ✓'));
 });
 $('#exportBtn').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(S,null,1)], {type:'application/json'});
@@ -1212,13 +1297,13 @@ $('#exportBtn').addEventListener('click', () => {
 });
 $('#importFile').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
-  try { const data = JSON.parse(await f.text()); if (!data.lmp) throw 0; S = Object.assign(blank(), data); save(); boot(); toast('اترجعت النسخة ✓'); }
-  catch(_){ toast('الملف ده مش نسخة من «حملي»'); }
+  try { const data = JSON.parse(await f.text()); if (!data.lmp) throw 0; S = Object.assign(blank(), data); save(); boot(); toast(tr('اترجعت النسخة ✓','Backup restored ✓')); }
+  catch(_){ toast(tr('الملف ده مش نسخة من «حملي»','This file isn\'t a Hamly backup')); }
 });
 $('#resetBtn').addEventListener('click', e => { if (armed(e.currentTarget)){ try{ localStorage.removeItem(KEY); }catch(_){} load(); boot(); } });
 
 /* ---------- Onboarding ---------- */
-$('#sMode').addEventListener('change', () => { $('#sDateLbl').firstChild.textContent = $('#sMode').value === 'lmp' ? 'أول يوم في آخر دورة' : 'ميعاد الولادة المتوقع'; });
+$('#sMode').addEventListener('change', () => { $('#sDateLbl').firstChild.textContent = $('#sMode').value === 'lmp' ? tr('أول يوم في آخر دورة','First day of your last period') : tr('ميعاد الولادة المتوقع','Due date'); });
 $('#sMode').dispatchEvent(new Event('change'));
 $('#setupForm').addEventListener('submit', e => {
   e.preventDefault();
@@ -1226,7 +1311,7 @@ $('#setupForm').addEventListener('submit', e => {
   S.name = $('#sName').value.trim();
   S.lmp = $('#sMode').value === 'lmp' ? ymd(d) : ymd(addDays(d,-280));
   const p = preg();
-  if (p.days < 0 || p.days > 300){ toast('التاريخ ده مش منطقي، راجعيه تاني'); S.lmp = null; return; }
+  if (p.days < 0 || p.days > 300){ toast(tr('التاريخ ده مش منطقي، راجعيه تاني','That date doesn\'t look right. Please check it.')); S.lmp = null; return; }
   S.lastWeekSeen = 0; save(); boot();
 });
 
@@ -1237,6 +1322,7 @@ function boot(){
   resetMedForm(); $('#aDate').min = ymd(today0()); $('#wDate').value = ymd(today0()); loadDiary(ymd(today0()));
   go('home'); scrollWeekbar(); checkReminders();
 }
+translateStatic();
 load(); boot();
 </script>
 </body>
