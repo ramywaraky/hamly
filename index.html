@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>حملي</title>
 <meta name="theme-color" content="#C2496E">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,6 +35,7 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
 body{padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
 .wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px}
@@ -192,6 +193,11 @@ h2.sect{font-size:1rem;color:var(--rose);margin-top:10px;margin-bottom:-4px}
 .celeach{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;text-align:start;font-weight:600;font-size:.9rem}
 .celebtns{display:flex;flex-direction:column;gap:8px;margin-top:6px}
 @media (prefers-reduced-motion:no-preference){.celecard{animation:pop .5s cubic-bezier(.2,1.4,.4,1)} @keyframes pop{from{transform:scale(.7);opacity:0}to{transform:none;opacity:1}} .celecard .medal{animation:swing 1.6s ease-in-out .3s 2} @keyframes swing{25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}}
+#medForm.editing{border:2px solid var(--rose);box-shadow:0 0 0 4px var(--rose-soft)}
+#medForm.editing #medFormTitle{color:var(--rose)}
+.item.flash{background:var(--rose-soft);border-radius:12px;transition:background .3s}
+/* iPhone zooms into fields smaller than 16px when typing: keep all fields at 16px */
+input,select,textarea,label input,label select,label textarea{font-size:16px}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .seg button{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--rose);color:#fff;border-color:var(--rose)}
@@ -1302,13 +1308,15 @@ $('#mTimesCount').addEventListener('change', () => drawTimes());
 function resetMedForm(){
   $('#medForm').reset(); $('#mId').value=''; $('#mStart').value = ymd(today0());
   $('#medFormTitle').textContent = tr('إضافة دوا','Add a medicine'); $('#medCancel').hidden = true; drawTimes();
+  $('#medForm').classList.remove('editing'); $('#medSubmit').textContent = tr('حفظ الدوا','Save medicine');
 }
 function editMed(id){
   const m = S.meds.find(x => x.id === id); if (!m) return;
   $('#mId').value = m.id; $('#mName').value = m.name; $('#mDose').value = m.dose||''; $('#mStart').value = m.start;
   $('#mDays').value = m.days||''; $('#mNotes').value = m.notes||''; $('#mTimesCount').value = m.times.length; drawTimes(m.times);
-  $('#medFormTitle').textContent = tr('تعديل ','Edit ') + m.name; $('#medCancel').hidden = false;
-  $('#medForm').scrollIntoView({behavior:'smooth'});
+  $('#medFormTitle').textContent = tr('✏️ بتعدّلي: ','✏️ Editing: ') + m.name; $('#medCancel').hidden = false;
+  $('#medForm').classList.add('editing'); $('#medSubmit').textContent = tr('حفظ التعديل','Save changes');
+  window.scrollTo({top: $('#medForm').getBoundingClientRect().top + scrollY - 12, behavior:'smooth'});
 }
 $('#medCancel').addEventListener('click', resetMedForm);
 $('#medForm').addEventListener('submit', e => {
@@ -1317,7 +1325,10 @@ $('#medForm').addEventListener('submit', e => {
     days: +$('#mDays').value || 0, notes: $('#mNotes').value.trim(), times: $$('.mTime').map(i => i.value).sort() };
   const i = S.meds.findIndex(x => x.id === m.id);
   if (i >= 0) S.meds[i] = m; else S.meds.push(m);
-  save(); resetMedForm(); render(); toast(tr('اتحفظ الدوا ✓ هنفكرك في مواعيده','Medicine saved ✓ We\'ll remind you on time'));
+  const wasEdit = i >= 0;
+  save(); resetMedForm(); render();
+  toast(wasEdit ? tr('اتعدّل الدوا ✓ لو ضايفة الأدوية للتقويم، ضيفيها تاني','Medicine updated ✓ If you added medicines to your calendar, add them again') : tr('اتحفظ الدوا ✓ هنفكرك في مواعيده','Medicine saved ✓ We\'ll remind you on time'));
+  if (wasEdit) { const it = [...document.querySelectorAll('#medList .item')].find(x => x.querySelector(`[data-edit="${m.id}"]`)); if (it){ it.classList.add('flash'); setTimeout(() => it.classList.remove('flash'), 1600); } }
 });
 
 /* ---------- Appointments ---------- */
@@ -1613,6 +1624,11 @@ function boot(){
   resetMedForm(); $('#aDate').min = ymd(today0()); $('#wDate').value = ymd(today0()); loadDiary(ymd(today0()));
   go('home'); scrollWeekbar(); checkReminders();
 }
+/* Keep the app at phone size: block pinch-zoom and double-tap zoom */
+['gesturestart','gesturechange','gestureend'].forEach(t => document.addEventListener(t, e => e.preventDefault(), {passive:false}));
+document.addEventListener('touchmove', e => { if (e.touches.length > 1 || (e.scale && e.scale !== 1)) e.preventDefault(); }, {passive:false});
+let lastTouchEnd = 0;
+document.addEventListener('touchend', e => { const now = Date.now(); if (now - lastTouchEnd < 300 && !e.target.closest('input,textarea,select')) e.preventDefault(); lastTouchEnd = now; }, {passive:false});
 translateStatic();
 load(); boot();
 </script>
