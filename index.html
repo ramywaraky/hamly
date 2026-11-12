@@ -165,6 +165,33 @@ h2.sect{font-size:1rem;color:var(--rose);margin-top:10px;margin-bottom:-4px}
 .wksrc{font-size:.74rem;color:var(--muted)}
 .wksrc a{color:var(--rose)}
 .wknav{display:flex;justify-content:space-between;gap:8px}
+.journey .weekbar{margin:2px -4px 0;padding:2px 4px 6px}
+.minis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mini{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:2px;min-width:0;position:relative}
+.mini .ic{font-size:1.1rem;line-height:1.2}
+.mini b{font-family:var(--display);font-size:.95rem;font-variant-numeric:tabular-nums}
+.mini .k{font-size:.7rem;color:var(--muted)}
+.mini b.sm{font-size:.82rem;line-height:1.4}
+.mini.pct svg{width:52px;height:52px}
+.mini.pct .pctnum{position:absolute;top:8px;left:0;right:0;height:52px;display:flex;align-items:center;justify-content:center;font-size:.74rem;color:var(--rose)}
+.jstats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.jst{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.jst .ic{font-size:1.3rem;line-height:1.2}
+.jst .k{font-size:.75rem;color:var(--muted)}
+.jst b{font-family:var(--display);font-size:1.05rem;font-variant-numeric:tabular-nums;line-height:1.35}
+.jst.pct{flex-direction:row;align-items:center;gap:10px}
+.jst.pct svg{width:58px;height:58px;flex:none}
+.jst.pct b{font-size:1.25rem;color:var(--rose);display:block}
+#jPctArc{transition:stroke-dashoffset .6s ease}
+.cele{position:fixed;inset:0;z-index:50;background:rgba(30,10,25,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:24px max(20px,env(safe-area-inset-left,0px))}
+.cele canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.celecard{position:relative;background:var(--surface);border-radius:28px;padding:26px 22px 20px;max-width:360px;width:100%;text-align:center;display:flex;flex-direction:column;gap:8px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.celecard .medal{width:92px;height:92px;margin:-70px auto 4px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFE7A8,#E8B04A 60%,#C08A2E);display:flex;align-items:center;justify-content:center;font-size:2.8rem;box-shadow:0 10px 24px rgba(192,138,46,.45),inset 0 -6px 12px rgba(0,0,0,.12);border:4px solid var(--surface)}
+.celekick{color:var(--rose);font-weight:600;font-size:.85rem}
+.celecard h2{font-size:1.5rem;line-height:1.3}
+.celeach{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;text-align:start;font-weight:600;font-size:.9rem}
+.celebtns{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+@media (prefers-reduced-motion:no-preference){.celecard{animation:pop .5s cubic-bezier(.2,1.4,.4,1)} @keyframes pop{from{transform:scale(.7);opacity:0}to{transform:none;opacity:1}} .celecard .medal{animation:swing 1.6s ease-in-out .3s 2} @keyframes swing{25%{transform:rotate(-10deg)}75%{transform:rotate(10deg)}}}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .seg button{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--rose);color:#fff;border-color:var(--rose)}
@@ -248,32 +275,32 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
     <section class="journey">
       <p class="center" id="jMonth" style="font-family:var(--display);color:var(--rose);margin:0"></p>
       <svg id="jRing" viewBox="0 0 300 300" aria-hidden="true"></svg>
-      <svg id="jLine" viewBox="0 0 320 84" aria-hidden="true"></svg>
+      <div class="weekbar" id="weekbar" aria-label="تصفحي الأسابيع"></div>
+      <svg id="jLine" viewBox="0 0 320 50" aria-hidden="true"></svg>
       <div class="row" style="flex-wrap:nowrap">
         <button type="button" class="nav" data-jstep="-1" aria-label="الأسبوع اللي قبله">→</button>
         <div class="jnext" id="jNext"></div>
         <button type="button" class="nav" data-jstep="1" aria-label="الأسبوع اللي بعده">←</button>
       </div>
       <div class="center"><button type="button" class="btn-ghost btn-sm" id="jBack" hidden>ارجعي للأسبوع الحالي</button></div>
-      <div class="meters">
-        <div class="meter"><span>📏 طول البيبي</span><b id="jLen"></b><div class="mbar"><i id="jLenBar"></i></div></div>
-        <div class="meter"><span>⚖️ وزن البيبي</span><b id="jWt"></b><div class="mbar"><i id="jWtBar" style="background:var(--sage)"></i></div></div>
-      </div>
-      <div class="jmeta"><p id="gaText" style="font-weight:600"></p><p class="muted" id="dueText"></p><p class="muted" id="leftText"></p></div>
     </section>
 
-    <div class="stats">
-      <div class="stat"><b id="stPct">0%</b><span>من الحمل</span></div>
-      <div class="stat"><b id="stDoses">0/0</b><span>جرعات النهارده</span></div>
-      <div class="stat"><b id="stAppt">—</b><span>الميعاد الجاي</span></div>
-    </div>
 
     <section class="card stack">
       <div class="row between"><h2>حجم البيبي</h2><span class="muted" id="babyWeekLbl"></span></div>
       <div class="baby"><div class="fruit" id="fruit">🍋</div><div class="stack" style="gap:2px;min-width:0"><b id="fruitName">ليمونة</b><span class="muted" id="fruitMeasure"></span></div></div>
       <p id="devText"></p>
-      <div class="banner"><b>نصيحة الأسبوع: </b><span id="tipText"></span></div>
-      <div class="weekbar" id="weekbar" aria-label="تصفحي الأسابيع"></div>
+      <div class="minis">
+        <div class="mini"><span class="ic">📏</span><b id="jLen"></b><span class="k">طول البيبي</span></div>
+        <div class="mini"><span class="ic">⚖️</span><b id="jWt"></b><span class="k">وزن البيبي</span></div>
+        <div class="mini pct">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="none" stroke="var(--line)" stroke-width="6"/><circle id="jPctArc" cx="32" cy="32" r="26" fill="none" stroke="var(--rose)" stroke-width="6" stroke-linecap="round" stroke-dasharray="163.4" stroke-dashoffset="163.4" transform="rotate(-90 32 32)"/></svg>
+          <b id="jPct" class="pctnum"></b><span class="k">من الحمل</span>
+        </div>
+        <div class="mini"><span class="ic">⏱️</span><b id="jAge" class="sm"></b><span class="k">عمر الحمل</span></div>
+        <div class="mini"><span class="ic">⏳</span><b id="jLeft" class="sm"></b><span class="k">فاضل على الولادة</span></div>
+        <div class="mini"><span class="ic">📅</span><b id="jDue" class="sm"></b><span class="k">ميعاد الولادة المتوقع</span></div>
+      </div>
     </section>
 
     <section class="links" aria-label="أقسام الدليل">
@@ -564,6 +591,17 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
   <button data-go="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>حسابي</button>
 </nav>
 <div class="toast" id="toast" hidden></div>
+<div class="cele" id="cele" hidden role="dialog" aria-modal="true" aria-labelledby="celeTitle">
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <div class="celecard">
+    <div class="medal" id="celeMedal">🏅</div>
+    <p class="celekick" id="celeKick"></p>
+    <h2 id="celeTitle"></h2>
+    <p id="celeMsg"></p>
+    <div class="celeach"><span id="celeAch"></span><div class="mbar"><i id="celeBar"></i></div><span class="muted" id="celeLeft"></span></div>
+    <div class="celebtns"><button type="button" id="celeOpen"></button><button type="button" class="btn-ghost" id="celeClose"></button></div>
+  </div>
+</div>
 
 <script src="i18n-en.js"></script>
 <script src="weeks-dev.js"></script>
@@ -841,23 +879,16 @@ function render(){
   $('#hello').textContent = (h < 12 ? tr('صباح الخير','Good morning') : tr('مساء الخير','Good evening')) + (S.name ? tr(` يا ${S.name}`, `, ${S.name}`) : '');
   $('#homeTitle').textContent = p.days < 0 ? tr('التاريخ لسه ما جاش','That date hasn\'t come yet') : tr(`انتي في الأسبوع ${ar(wk)}`, `You're in week ${wk}`);
   $('#trimChip').textContent = trimester(wk);
-  $('#gaText').textContent = tr(`${ar(p.w)} أسبوع و${ar(p.d)} ${p.d===1?'يوم':'أيام'}`, `${p.w} weeks and ${p.d} day${p.d===1?'':'s'}`);
-  $('#dueText').textContent = tr('ميعاد الولادة المتوقع: ','Due date: ') + fmtDate(p.due);
-  $('#leftText').textContent = p.left > 0 ? tr(`فاضل ${ar(p.left)} يوم (حوالي ${ar(Math.ceil(p.left/7))} أسبوع)`, `${p.left} days to go (about ${Math.ceil(p.left/7)} weeks)`) : tr('وصلنا لميعاد الولادة المتوقع 💗','You\'ve reached your due date 💗');
-  $('#stPct').textContent = ar(p.pct) + tr('٪','%');
   const doses = dosesFor(today0()), tk = S.taken[ymd(today0())]||{};
-  $('#stDoses').textContent = `${ar(doses.filter(x=>tk[x.key]).length)}/${ar(doses.length)}`;
   const next = upcomingAppts()[0];
-  $('#stAppt').textContent = next ? fmtShort(parse(next.date)) : '—';
 
   // birthday + weekly banner
   if (isBirthday(S.profile.dob)){
     $('#weekBanner').hidden = false;
     $('#weekBanner').textContent = tr(`🎂 كل سنة وانتي طيبة${S.name ? ' يا ' + S.name : ''}! عيد ميلاد سعيد، والسنة الجاية تحتفلي ومعاكي البيبي 💗`, `🎂 Happy birthday${S.name ? ', ' + S.name : ''}! Next year you'll celebrate with your baby 💗`);
   } else if (S.lastWeekSeen !== wk){
-    $('#weekBanner').hidden = false;
-    $('#weekBanner').textContent = tr(`🎉 مبروك! دخلتي الأسبوع ${ar(wk)}. البيبي دلوقتي قد ${info[1]}.`, `🎉 Congratulations! You're now in week ${wk}. Your baby is the size of ${info[1]}.`);
     S.lastWeekSeen = wk; save();
+    setTimeout(() => celebrate(wk), 350);
   }
   renderWeek(selWeek || wk, wk);
   renderInfo(p);
@@ -897,7 +928,6 @@ function renderWeek(w, cur){
   $('#fruitName').textContent = tr('قد ','Size of ') + info[1];
   $('#fruitMeasure').textContent = info[2];
   $('#devText').textContent = info[3];
-  $('#tipText').textContent = info[4];
   const bar = $('#weekbar');
   if (!bar.childElementCount){
     bar.innerHTML = Array.from({length:42},(_,i)=>`<button type="button" data-week="${i+1}"><span class="e">${WEEKS[i+1][0]}</span>${tr('أسبوع','Week')} ${ar(i+1)}</button>`).join('');
@@ -968,10 +998,8 @@ function drawJourney(w, cur){
   LINE_MS.forEach(([mw, lbl]) => {
     const ok = W >= mw;
     L += `<circle cx="${X(mw)}" cy="${ly}" r="7" fill="${ok ? 'var(--surface)' : 'var(--bg)'}" stroke="${ok ? triCol(triOf(mw)) : 'var(--line)'}" stroke-width="3"/>`;
-    if (lbl){ const [la, le] = lbl.split('|'); L += `<text x="${X(mw)}" y="${ly+30}" font-size="11" text-anchor="middle" fill="${ok ? 'var(--ink)' : 'var(--muted)'}">${tr(la, le)}</text>`; }
   });
   L += `<g transform="translate(${X(W)} ${ly})"><circle r="16" fill="var(--rose)"/><text y="6" font-size="16" text-anchor="middle">${WEEKS[w][0]}</text></g>`;
-  L += `<text x="${X(0)}" y="${ly+52}" font-size="10" fill="var(--muted)" text-anchor="middle">${ar(1)}</text><text x="${X(40)}" y="${ly+52}" font-size="10" fill="var(--muted)" text-anchor="middle">${ar(40)}</text>`;
   $('#jLine').innerHTML = L;
   // next milestone
   const here = JOURNEY.find(j => j[0] === w), nx = JOURNEY.find(j => j[0] > w);
@@ -982,8 +1010,13 @@ function drawJourney(w, cur){
   $('#jBack').hidden = isCur;
   // size
   $('#jLen').textContent = lenTxt(w); $('#jWt').textContent = wtTxt(w);
-  $('#jLenBar').style.width = ((LEN[w] || 0)/52*100) + '%';
-  $('#jWtBar').style.width = ((WT[w] || 0)/3700*100) + '%';
+  const pc = Math.min(100, Math.round(days/280*100));
+  $('#jPct').textContent = ar(pc) + tr('٪','%');
+  const aw = Math.floor(days/7), ad = days % 7, lw = Math.max(0, 40 - w);
+  $('#jAge').textContent = tr(`${ar(aw)} أسبوع و${ar(ad)} ${ad === 1 ? 'يوم' : 'أيام'}`, `${aw}w ${ad}d`);
+  $('#jLeft').textContent = lw ? tr(`${ar(lw)} ${lw === 1 ? 'أسبوع' : 'أسبوع'}`, `${lw} weeks`) : tr('وصلنا 💗','Due now 💗');
+  $('#jDue').textContent = p.due.toLocaleDateString(LOC, {day:'numeric', month:'long', year:'numeric'});
+  $('#jPctArc').style.strokeDashoffset = (163.4 * (1 - pc/100)).toFixed(1);
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-jstep]');
@@ -992,7 +1025,7 @@ document.addEventListener('click', e => {
   const cur = preg().week;
   selWeek = back ? 0 : Math.min(42, Math.max(1, (selWeek || cur) + +b.dataset.jstep));
   renderWeek(selWeek || cur, cur);
-  const c = $('#weekbar .sel') || $('#weekbar .cur'); if (c) c.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+  centerInBar($('#weekbar .sel') || $('#weekbar .cur'));
 });
 /* ---------- Week details page (cover + tabs) ---------- */
 let wkView = 1, wkTab = 'baby';
@@ -1045,6 +1078,70 @@ document.addEventListener('change', e => {
   const k = e.target.dataset && e.target.dataset.wtodo; if (!k) return;
   S.wtodo = S.wtodo || {}; if (e.target.checked) S.wtodo[k] = 1; else delete S.wtodo[k]; save();
 });
+/* ---------- Weekly celebration ---------- */
+const CELE_MS = {
+  4:['💗','أهلاً بالرحلة!','Welcome to the journey!','أجمل مشوار بدأ، وإحنا معاكي أسبوع بأسبوع.','The most beautiful journey has begun — we\'re with you week by week.'],
+  6:['💓','وسام أول نبض','First heartbeat badge','قلب البيبي بدأ ينبض! لحظة ما تتنسيش.','Your baby\'s heart has started beating — unforgettable!'],
+  13:['🥇','خلصتي الثلث الأول!','First trimester complete!','أصعب أسابيع الغثيان والتعب قربت تخلص. انتي بطلة!','The toughest weeks of nausea and tiredness are nearly behind you. You\'re a star!'],
+  14:['🌸','أهلاً بالثلث التاني','Hello, second trimester','الطاقة بترجع والبطن بتبان. أحلى فترة في الحمل بدأت!','Energy returns and the bump shows. The best stretch begins!'],
+  20:['🌗','نص المشوار!','Halfway there!','عدّيتي نص الرحلة! البيبي قد موزة وبيتحرك ويسمعك.','You\'re halfway! Your baby is banana-sized, moving and hearing you.'],
+  24:['💪','وسام القوة','Strength badge','البيبي بقى أقوى بكتير. كل يوم بتقربي من اللقاء.','Your baby is much stronger now. Every day brings you closer.'],
+  28:['⭐','أهلاً بالثلث الأخير','Hello, third trimester','آخر مرحلة! ابدئي عدّ الركلات وجهزي للقاء.','The final stretch! Start counting kicks and get ready to meet your baby.'],
+  34:['🎒','وقت تجهيز الشنطة','Hospital-bag time','قربنا جداً! جهزي شنطة الولادة على مهلك.','So close now! Pack your hospital bag at your own pace.'],
+  37:['🌟','البيبي مكتمل!','Your baby is full term!','البيبي جاهز للدنيا. أي يوم من دلوقتي ممكن يبقى يوم اللقاء.','Your baby is ready. Any day now could be the day.'],
+  40:['🎉','أسبوع الولادة!','Due week!','وصلتي! أسبوع اللقاء جه. ألف مبروك مقدماً 💗','You made it! It\'s due week. Congratulations in advance 💗']
+};
+const CELE_MSG = [
+  ['كل أسبوع بيعدّي انتي بتعملي حاجة عظيمة 💗','Every week that passes, you\'re doing something amazing 💗'],
+  ['البيبي بيكبر، وانتي كل يوم أقوى 💪','Your baby is growing, and you get stronger every day 💪'],
+  ['خطوة كمان أقرب للقاء البيبي 👶','One more step closer to meeting your baby 👶'],
+  ['برافو عليكي! استمري في الاهتمام بنفسك 🌷','Well done! Keep taking care of yourself 🌷'],
+  ['انتي بتعملي أحلى حاجة في الدنيا ✨','You\'re doing the most beautiful thing in the world ✨']
+];
+function celeText(w){
+  const ms = CELE_MS[w], done = Math.max(0, w - 1), left = Math.max(0, 40 - w), I = WEEKS[w];
+  const gen = CELE_MSG[w % CELE_MSG.length];
+  return {
+    medal: ms ? ms[0] : '🏅',
+    kick: ms ? tr('🎖️ وسام جديد','🎖️ New badge') : tr('🎉 أسبوع جديد','🎉 New week'),
+    title: ms ? tr(ms[1], ms[2]) : tr(`مبروك! دخلتي الأسبوع ${ar(w)}`, `Congratulations! Week ${w}`),
+    msg: ms ? tr(ms[3], ms[4]) : tr(gen[0], gen[1]) + ' ' + tr(`البيبي دلوقتي قد ${I[1]} ${I[0]}`, `Your baby is now the size of ${I[1]} ${I[0]}`),
+    ach: done ? tr(`🏅 إنجاز: خلصتي ${ar(done)} ${done === 1 ? 'أسبوع' : 'أسبوع'} من الحمل`, `🏅 Achievement: ${done} week${done === 1 ? '' : 's'} complete`) : tr('🏅 بداية الرحلة','🏅 The journey begins'),
+    left: left ? tr(`فاضل ${ar(left)} أسبوع على اللقاء 💗`, `${left} weeks until you meet 💗`) : tr('وصلنا لأسبوع اللقاء 💗','It\'s meeting week 💗'),
+    pct: Math.min(100, Math.round(done*7/280*100)),
+    notifTitle: ms ? `${ms[0]} ${tr(ms[1], ms[2])}` : tr(`🎉 مبروك! دخلتي الأسبوع ${ar(w)}`, `🎉 Congratulations! You're in week ${w}`),
+    notifBody: (done ? tr(`خلصتي ${ar(done)} أسبوع 💪 `, `${done} weeks done 💪 `) : '') + tr(`البيبي بقى قد ${I[1]}. `, `Baby is now the size of ${I[1]}. `) + (left ? tr(`فاضل ${ar(left)} أسبوع على اللقاء 💗`, `${left} weeks to go 💗`) : '')
+  };
+}
+let confettiStop = null;
+function confetti(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c = $('#confetti'), ctx = c.getContext('2d'), dpr = window.devicePixelRatio || 1;
+  const W = c.width = innerWidth * dpr, H = c.height = innerHeight * dpr;
+  const cols = ['#C2496E','#EBA3B8','#D9A441','#4F8C7E','#F6C9B5','#8DB8E3'];
+  const parts = Array.from({length: 140}, () => ({x: Math.random()*W, y: -Math.random()*H*.6, w: (6+Math.random()*6)*dpr, h: (8+Math.random()*8)*dpr, vy: (2+Math.random()*3)*dpr, vx: (Math.random()-.5)*2*dpr, r: Math.random()*6, vr: (Math.random()-.5)*.2, c: cols[Math.floor(Math.random()*cols.length)]}));
+  let t0 = performance.now(), raf;
+  const tick = now => {
+    ctx.clearRect(0,0,W,H);
+    parts.forEach(p => { p.x += p.vx; p.y += p.vy; p.r += p.vr; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h); ctx.restore(); });
+    if (now - t0 < 4200) raf = requestAnimationFrame(tick); else ctx.clearRect(0,0,W,H);
+  };
+  raf = requestAnimationFrame(tick);
+  confettiStop = () => { cancelAnimationFrame(raf); ctx.clearRect(0,0,W,H); };
+}
+function celebrate(w){
+  const t = celeText(w);
+  $('#celeMedal').textContent = t.medal; $('#celeKick').textContent = t.kick; $('#celeTitle').textContent = t.title;
+  $('#celeMsg').textContent = t.msg; $('#celeAch').textContent = t.ach; $('#celeLeft').textContent = t.left;
+  $('#celeBar').style.width = t.pct + '%';
+  $('#celeOpen').textContent = tr(`شوفي الأسبوع ${ar(w)} ←`, `See week ${w} →`); $('#celeClose').textContent = tr('تمام 💗','Lovely 💗');
+  $('#celeOpen').dataset.w = w;
+  $('#cele').hidden = false; confetti();
+}
+function closeCele(){ $('#cele').hidden = true; if (confettiStop) confettiStop(); }
+$('#celeClose').addEventListener('click', closeCele);
+$('#celeOpen').addEventListener('click', () => { const w = +$('#celeOpen').dataset.w; closeCele(); openWeek(w, 'baby'); });
+$('#cele').addEventListener('click', e => { if (e.target.id === 'cele') closeCele(); });
 /* ---------- Pregnancy details grid ---------- */
 const ORD = EN ? ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th'] : ['الأول','التاني','التالت','الرابع','الخامس','السادس','السابع','التامن','التاسع'];
 function season(d){ const m = d.getMonth(); return m===11||m<2 ? tr('الشتاء ❄️','Winter ❄️') : m<5 ? tr('الربيع 🌷','Spring 🌷') : m<8 ? tr('الصيف ☀️','Summer ☀️') : tr('الخريف 🍂','Autumn 🍂'); }
@@ -1162,7 +1259,12 @@ $$('[data-lang-set]').forEach(b => {
 });
 
 let weekbarScrolled = false;
-function scrollWeekbar(){ if (weekbarScrolled) return; const c = $('#weekbar .cur'); if (c){ c.scrollIntoView({inline:'center',block:'nearest'}); weekbarScrolled = true; } }
+/* Scroll a horizontal bar so the item is centred, without moving the page up or down */
+function centerInBar(el, smooth){
+  if (!el) return; const bar = el.parentElement, bl = bar.getBoundingClientRect(), r = el.getBoundingClientRect();
+  bar.scrollTo({left: bar.scrollLeft + (r.left + r.width/2) - (bl.left + bl.width/2), behavior: smooth ? 'smooth' : 'auto'});
+}
+function scrollWeekbar(){ if (weekbarScrolled) return; const c = $('#weekbar .cur'); if (c){ centerInBar(c); weekbarScrolled = true; } }
 
 function upcomingAppts(){
   const now = new Date();
@@ -1425,7 +1527,7 @@ function checkReminders(){
     if (mins <= 120 && mins > 0 && !N[key]){ notify(tr('ميعاد النهارده: ','Appointment today: ') + a.title, tr('الساعة ','At ') + fmtTime(a.time), key); N[key]=1; save(); }
   });
   const wk = preg().week, wkKey = 'week-'+wk;
-  if (!S.notified[wkKey]){ S.notified[wkKey] = 1; save(); if (wk > 1) notify(tr(`انتي في الأسبوع ${ar(wk)} 🎉`, `You're in week ${wk} 🎉`), tr(`البيبي دلوقتي قد ${WEEKS[wk][1]}. `, `Your baby is the size of ${WEEKS[wk][1]}. `) + WEEKS[wk][4], wkKey); }
+  if (!S.notified[wkKey]){ S.notified[wkKey] = 1; save(); if (wk > 1) notify(celeText(wk).notifTitle, celeText(wk).notifBody, wkKey); }
   // prune old notify logs
   Object.keys(S.notified).forEach(d => { if (/^\d{4}-/.test(d) && d < ymd(addDays(today0(),-3))) delete S.notified[d]; });
 }
@@ -1453,7 +1555,7 @@ function weekEvents(){
   const out = [];
   for (let w = Math.max(2,cw); w <= 42; w++){
     const d = ymd(addDays(lmp,(w-1)*7)), info = WEEKS[w];
-    out.push(vevent({uid:`week-${S.lmp}-${w}`, start:icsDT(d,'10:00'), end:icsDT(d,'10:15'), title:tr(`🤰 انتي في الأسبوع ${w} من الحمل`, `🤰 You're in week ${w} of pregnancy`), desc:tr(`البيبي دلوقتي قد ${info[1]} ${info[2]}\n${info[3]}\nنصيحة: ${info[4]}`, `Your baby is the size of ${info[1]} (${info[2]})\n${info[3]}\nTip: ${info[4]}`)}));
+    out.push(vevent({uid:`week-${S.lmp}-${w}`, start:icsDT(d,'10:00'), end:icsDT(d,'10:15'), title:celeText(w).notifTitle, desc:celeText(w).notifBody + '\n\n' + tr(`البيبي دلوقتي قد ${info[1]} ${info[2]}\n${info[3]}\nنصيحة: ${info[4]}`, `Your baby is the size of ${info[1]} (${info[2]})\n${info[3]}\nTip: ${info[4]}`)}));
   }
   return out;
 }

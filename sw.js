@@ -1,4 +1,4 @@
-const CACHE = 'hamly-v6';
+const CACHE = 'hamly-v8';
 const FILES = ['./', './index.html', './i18n-en.js', './weeks-dev.js', './weeks-more.js', './weeks-more-en.js', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './badge.png'];
 
 self.addEventListener('install', e => {
@@ -16,7 +16,8 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const sameOrigin = new URL(e.request.url).origin === location.origin;
   e.respondWith(
-    fetch(e.request).then(res => {
+    // Same-origin app files: always ask the server for the newest version (skip the browser's HTTP cache)
+    (sameOrigin && e.request.mode !== 'navigate' ? fetch(e.request.url, {cache: 'no-cache'}) : fetch(e.request, {cache: 'no-cache'})).then(res => {
       if (res.ok && sameOrigin) {
         const copy = res.clone();
         caches.open(CACHE).then(c => c.put(e.request, copy));
