@@ -19,19 +19,19 @@
 /* Layout: one-column phone app, home card on top, bottom tab bar. Soft rose + sage on warm white. */
 :root{
   --bg:#FBF6F7; --surface:#FFFFFF; --ink:#2A2230; --muted:#7A6E78; --line:#EEE3E7;
-  --rose:#C2496E; --rose-soft:#F8E3EA; --rose-mid:#EBA3B8; --gold:#D9A441; --skin:#F6C9B5; --skin-dk:#E8A88F; --sage:#4F8C7E; --sage-soft:#E3F0EC; --warn:#B7791F;
+  --rose:#C2496E; --rose-soft:#F8E3EA; --rose-mid:#EBA3B8; --gold:#D9A441; --gold-soft:#F7ECD6; --sky:#4A7FB5; --sky-soft:#E3EEF8; --red:#C0392B; --red-soft:#FBE7E4; --skin:#F6C9B5; --skin-dk:#E8A88F; --sage:#4F8C7E; --sage-soft:#E3F0EC; --warn:#B7791F;
   --display:"Alexandria","IBM Plex Sans Arabic",system-ui,sans-serif;
   --body:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#18141A; --surface:#231D25; --ink:#F2EAF0; --muted:#A898A4; --line:#352C37;
-  --rose:#EC7C9E; --rose-soft:#3A2230; --rose-mid:#7A3A52; --gold:#E8BD63; --skin:#E8B39C; --skin-dk:#C98A72; --sage:#7CC2B1; --sage-soft:#1F3330; --warn:#E3B05C;
+  --rose:#EC7C9E; --rose-soft:#3A2230; --rose-mid:#7A3A52; --gold:#E8BD63; --gold-soft:#3A3020; --sky:#8DB8E3; --sky-soft:#1E2B3A; --red:#F08A7E; --red-soft:#3A2220; --skin:#E8B39C; --skin-dk:#C98A72; --sage:#7CC2B1; --sage-soft:#1F3330; --warn:#E3B05C;
   color-scheme:dark;
 }}
 :root[data-theme="dark"]{
   --bg:#18141A; --surface:#231D25; --ink:#F2EAF0; --muted:#A898A4; --line:#352C37;
-  --rose:#EC7C9E; --rose-soft:#3A2230; --rose-mid:#7A3A52; --gold:#E8BD63; --skin:#E8B39C; --skin-dk:#C98A72; --sage:#7CC2B1; --sage-soft:#1F3330; --warn:#E3B05C;
+  --rose:#EC7C9E; --rose-soft:#3A2230; --rose-mid:#7A3A52; --gold:#E8BD63; --gold-soft:#3A3020; --sky:#8DB8E3; --sky-soft:#1E2B3A; --red:#F08A7E; --red-soft:#3A2220; --skin:#E8B39C; --skin-dk:#C98A72; --sage:#7CC2B1; --sage-soft:#1F3330; --warn:#E3B05C;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -137,6 +137,34 @@ h2.sect{font-size:1rem;color:var(--rose);margin-top:10px;margin-bottom:-4px}
 .mbar{height:8px;border-radius:99px;background:var(--line);margin-top:6px;overflow:hidden}
 .mbar i{display:block;height:100%;background:var(--rose);border-radius:99px;transition:width .5s}
 .jmeta{border-top:1px solid var(--line);padding-top:8px;text-align:center;display:flex;flex-direction:column;gap:2px}
+.wkhero{background:linear-gradient(160deg,#C2496E,#8E2F50);color:#fff;padding:calc(14px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 30px max(16px,env(safe-area-inset-left,0px));position:relative}
+.wkhero .bar{display:flex;justify-content:space-between;align-items:center}
+.wkhero .bar button{background:rgba(255,255,255,.18);color:#fff;width:38px;height:38px;border-radius:50%;padding:0;font-size:1.1rem}
+.wkhero .lbl{margin-top:8px;opacity:.9}
+.wkhero .num{font-family:var(--display);font-weight:700;font-size:4.2rem;line-height:1}
+.wkhero .fr{position:absolute;inset-inline-end:max(18px,env(safe-area-inset-left,0px));top:calc(56px + env(safe-area-inset-top,0px));font-size:4.6rem;filter:drop-shadow(0 8px 14px rgba(0,0,0,.25))}
+.wkhero .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.wkhero .chips span{font-size:.75rem;background:rgba(255,255,255,.18);padding:3px 10px;border-radius:99px}
+.wktabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px;margin:-22px max(12px,env(safe-area-inset-left,0px)) 0;position:relative;z-index:2;box-shadow:0 6px 16px rgba(60,20,40,.1)}
+.wktabs::-webkit-scrollbar{display:none}
+.wktabs button{flex:none;background:none;color:var(--muted);font-size:.82rem;padding:8px 11px;border-radius:10px;white-space:nowrap}
+.wktabs button[aria-pressed="true"]{background:var(--rose);color:#fff}
+.wkbody{max-width:560px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px}
+.wkbody .card{display:flex;flex-direction:column;gap:8px}
+.wkbody .card.sage{background:var(--sage-soft);border-color:transparent}
+.wkbody .card.gold{background:var(--gold-soft);border-color:transparent}
+.wkbody .card.sky{background:var(--sky-soft);border-color:transparent}
+.wkbody .card.red{background:var(--red-soft);border-color:transparent}
+.wkmom{display:flex;flex-direction:column;gap:10px}
+.wkmom b{display:block;font-weight:600}
+.wkmom span{color:var(--muted);font-size:.86rem}
+.wktodo{display:flex;flex-direction:column;gap:6px}
+.wktodo label{flex-direction:row;align-items:flex-start;gap:10px;color:var(--ink);font-size:.95rem}
+.wktodo input{width:20px;height:20px;accent-color:var(--rose);flex:none;margin-top:3px}
+.wktodo input:checked + span{text-decoration:line-through;color:var(--muted)}
+.wksrc{font-size:.74rem;color:var(--muted)}
+.wksrc a{color:var(--rose)}
+.wknav{display:flex;justify-content:space-between;gap:8px}
 .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .seg button{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--rose);color:#fff;border-color:var(--rose)}
@@ -249,8 +277,8 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
     </section>
 
     <section class="links" aria-label="أقسام الدليل">
-      <button class="link" data-page="symptoms"><span class="ic">🤰</span><span class="t" id="lnkSym">أعراض الأسبوع</span><span class="arr">‹</span></button>
-      <button class="link" data-page="tips"><span class="ic">💡</span><span class="t" id="lnkTips">نصائح الأسبوع</span><span class="arr">‹</span></button>
+      <button class="link" data-wopen="body"><span class="ic">🤰</span><span class="t" id="lnkSym">أعراض الأسبوع</span><span class="arr">‹</span></button>
+      <button class="link" data-wopen="tips"><span class="ic">💡</span><span class="t" id="lnkTips">نصائح الأسبوع</span><span class="arr">‹</span></button>
       <button class="link" data-page="nutrition"><span class="ic">🥗</span><span class="t">التغذية الصحية أثناء الحمل</span><span class="arr">‹</span></button>
       <button class="link" data-go="appts"><span class="ic">🩺</span><span class="t">مواعيد فحوصات الحمل</span><span class="arr">‹</span></button>
       <button class="link" data-page="changes"><span class="ic">🌸</span><span class="t">تغيرات الحمل والتعامل معها</span><span class="arr">‹</span></button>
@@ -289,6 +317,9 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
     <p class="disclaimer">المعلومات هنا عامة ومش بديل عن كلام الدكتور المتابع.</p>
   </div>
 </main>
+
+<!-- ============ WEEK DETAILS ============ -->
+<main class="view" id="v-week" hidden><div id="wkPage"></div></main>
 
 <!-- ============ MEDS ============ -->
 <main class="wrap view" id="v-meds" hidden>
@@ -535,6 +566,9 @@ nav.tabs button[aria-current="page"]{color:var(--rose)}
 <div class="toast" id="toast" hidden></div>
 
 <script src="i18n-en.js"></script>
+<script src="weeks-dev.js"></script>
+<script src="weeks-more.js"></script>
+<script src="weeks-more-en.js"></script>
 <script>
 'use strict';
 const LANG = (() => { try { return localStorage.getItem('hamly-lang') === 'en' ? 'en' : 'ar'; } catch(_) { return 'ar'; } })();
@@ -748,7 +782,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 /* ---------- State ---------- */
 const KEY = 'hamly-v1';
 let S;
-function blank(){ return {name:'',lmp:null,profile:{},log:[],readNotifs:{},meds:[],taken:{},appts:[],tests:{},bag:{},kicks:[],contr:[],weights:[],water:{},lastWeekSeen:0,notified:{}}; }
+function blank(){ return {name:'',lmp:null,wtodo:{},profile:{},log:[],readNotifs:{},meds:[],taken:{},appts:[],tests:{},bag:{},kicks:[],contr:[],weights:[],water:{},lastWeekSeen:0,notified:{}}; }
 function load(){ try{ S = Object.assign(blank(), JSON.parse(localStorage.getItem(KEY)||'{}')); }catch(e){ S = blank(); } }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast(tr('مقدرناش نحفظ، المساحة مليانة أو التخزين مقفول','Couldn\'t save: storage is full or blocked')); } }
 
@@ -828,6 +862,7 @@ function render(){
   renderWeek(selWeek || wk, wk);
   renderInfo(p);
   if (!$('#v-page').hidden) renderPage();
+  if (!$('#v-week').hidden) renderWeekPage();
 
   $('#homeDoses').innerHTML = doses.length ? doses.map(x => doseHTML(x, ymd(today0()))).join('') : `<div class="empty">${tr('مفيش أدوية النهارده. ضيفي الفيتامينات من صفحة الأدوية.','No medicines today. Add your vitamins on the Medicines page.')}</div>`;
   $('#todayDoses').innerHTML = doses.length ? doses.map(x => doseHTML(x, ymd(today0()))).join('') : `<div class="empty">${tr('مفيش جرعات النهارده.','No doses today.')}</div>`;
@@ -873,7 +908,7 @@ function renderWeek(w, cur){
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-week]'); if (!b) return;
-  selWeek = +b.dataset.week; renderWeek(selWeek, preg().week);
+  selWeek = +b.dataset.week; renderWeek(selWeek, preg().week); openWeek(selWeek);
 });
 /* ---------- Home infographic: 40-week ring + journey line ---------- */
 const LEN = {4:.1,5:.2,6:.6,7:1,8:1.6,9:2.3,10:3,11:4,12:5.5,13:7,14:8.5,15:10,16:12,17:13,18:14,19:15,20:25,21:27,22:28,23:29,24:30,25:34,26:35,27:36,28:37,29:38,30:39,31:41,32:42,33:44,34:45,35:46,36:47,37:48,38:49,39:50,40:51,41:52,42:52};
@@ -958,6 +993,57 @@ document.addEventListener('click', e => {
   selWeek = back ? 0 : Math.min(42, Math.max(1, (selWeek || cur) + +b.dataset.jstep));
   renderWeek(selWeek || cur, cur);
   const c = $('#weekbar .sel') || $('#weekbar .cur'); if (c) c.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+});
+/* ---------- Week details page (cover + tabs) ---------- */
+let wkView = 1, wkTab = 'baby';
+const HM = window.HAMLY_MORE || {}, HD = window.HAMLY_DEV || {sources:[]};
+const DEVW = w => ((HD[LANG] || HD.ar || {})[w]) || [];
+const MOREW = w => ((EN ? HM.en : HM.ar) || {})[w];
+const WARNT = t => ((EN ? HM.warn_en : HM.warn) || {})[t] || [];
+const WK_TABS = [['baby','👶 البيبي','👶 Baby'],['body','🤰 جسمك','🤰 Your body'],['food','🥗 أكل وحركة','🥗 Food & move'],['todo','✅ مهام','✅ To-do'],['tips','💡 نصايح','💡 Tips']];
+function openWeek(w, tab){ wkView = Math.min(42, Math.max(1, w)); if (tab) wkTab = tab; go('week'); }
+const wul = a => `<ul class="blist">${a.map(t => `<li><span>${t}</span></li>`).join('')}</ul>`;
+function renderWeekPage(){
+  const w = wkView, cur = preg().week, p = preg(), I = WEEKS[w], M = MOREW(w);
+  if (!M) { $('#wkPage').innerHTML = ''; return; }
+  const days = w === cur ? Math.max(0, p.days) : (w-1)*7, mi = Math.min(8, Math.max(0, Math.floor(days/30.44)));
+  const t = w <= 13 ? 1 : w <= 27 ? 2 : 3, wl = Math.max(0, 40 - w);
+  const card = (c, h, body) => `<section class="card ${c}"><h3>${h}</h3>${body}</section>`;
+  const T = TESTS.filter(([a,b]) => w >= a && w <= b).map(x => x[2]);
+  const done = S.wtodo || {};
+  const src = `<p class="wksrc">📚 ${tr('المصادر:','Sources:')} ${HD.sources.map(x => `<a href="${x[2]}" target="_blank" rel="noopener">${tr(x[0], x[1])}</a>`).join(' · ')}. ${tr('المعلومات عامة ومش بديل عن الدكتور.','General information, not a replacement for your doctor.')}</p>`;
+  const sizes = `<div class="meters"><div class="meter"><span>📏 ${tr('طول البيبي','Baby length')}</span><b>${lenTxt(w)}</b><div class="mbar"><i style="width:${(LEN[w]||0)/52*100}%"></i></div></div><div class="meter"><span>⚖️ ${tr('وزن البيبي','Baby weight')}</span><b>${wtTxt(w)}</b><div class="mbar"><i style="width:${(WT[w]||0)/3700*100}%;background:var(--sage)"></i></div></div></div>`;
+  let body = '';
+  if (wkTab === 'baby') body = card('', `👶 ${tr('البيبي الأسبوع ده','Your baby this week')}`, wul(DEVW(w))) + sizes + card('', `${I[0]} ${tr('البيبي دلوقتي قد','Your baby is the size of')}`, `<p style="font-family:var(--display);font-size:1.1rem">${I[1]}</p>`) + src;
+  else if (wkTab === 'body') body = card('', `🤰 ${tr('جسمك الأسبوع ده','Your body this week')}`, `<div class="wkmom">${M.mom.map(([a,b]) => `<div><b>• ${a}</b><span>💡 ${b}</span></div>`).join('')}</div>`) + card('red', `🚨 ${tr('كلمي الدكتور فوراً لو','Call your doctor right away if')}`, wul(WARNT(t)));
+  else if (wkTab === 'food') body = card('sage', `🥗 ${tr('أكل الأسبوع','This week\'s food')}`, `<b>${M.food[0]}</b><p>${M.food[1]}</p>`) + card('sky', `🧘‍♀️ ${tr('حركة ورياضة','Movement & exercise')}`, `<p>${M.move}</p>`) + `<button class="btn-ghost" data-page="nutrition">${tr('دليل التغذية الكامل','Full nutrition guide')}</button>`;
+  else if (wkTab === 'todo') body = card('gold', `✅ ${tr('مهام الأسبوع','This week\'s to-do')}`, `<div class="wktodo">${M.todo.map((x,i) => `<label><input type="checkbox" data-wtodo="${w}-${i}" ${done[`${w}-${i}`]?'checked':''}><span>${x}</span></label>`).join('')}</div>`)
+      + (T.length ? card('', `🩺 ${tr('فحوصات ميعادها دلوقتي','Tests due now')}`, wul(T)) : '')
+      + card('sky', `❓ ${tr('اسألي الدكتور','Ask your doctor')}`, `<p>«${M.ask}»</p>`)
+      + card('gold', `👨 ${tr('دور الزوج','For your husband')}`, `<p>${M.dad}</p>`);
+  else body = card('sage', `💡 ${tr('نصايح ليكي','Tips for you')}`, wul([I[4], ...TIPS[w]]));
+  body += `<div class="wknav"><button class="btn-ghost btn-sm" data-wkstep="-1" ${w<=1?'disabled':''}>${tr('→ الأسبوع','← Week')} ${ar(Math.max(1,w-1))}</button><button class="btn-ghost btn-sm" data-wkstep="1" ${w>=42?'disabled':''}>${tr('الأسبوع','Week')} ${ar(Math.min(42,w+1))} ${tr('←','→')}</button></div>`;
+  $('#wkPage').innerHTML = `
+    <header class="wkhero">
+      <div class="bar"><button type="button" data-go="home" aria-label="${tr('رجوع','Back')}">${tr('→','←')}</button>${w === cur ? `<span class="chips"><span>${tr('الأسبوع الحالي','This week')}</span></span>` : ''}</div>
+      <p class="lbl">${tr('الأسبوع','Week')}</p><div class="num">${ar(w)}</div>
+      <div class="chips"><span>${trimester(w)}</span><span>${tr(`الشهر ${ORD[mi]}`, `${ORD[mi]} month`)}</span><span>${wl ? tr(`فاضل ${ar(wl)} أسبوع`, `${wl} weeks to go`) : tr('وصلنا 💗','Due now 💗')}</span></div>
+      <div class="fr">${I[0]}</div>
+    </header>
+    <nav class="wktabs" aria-label="${tr('أقسام الأسبوع','Week sections')}">${WK_TABS.map(([k,a,e]) => `<button type="button" data-wktab="${k}" aria-pressed="${wkTab===k}">${tr(a,e)}</button>`).join('')}</nav>
+    <div class="wkbody">${body}</div>`;
+  const on = $('.wktabs [aria-pressed="true"]'), bar = $('.wktabs');
+  if (on && bar){ const bl = bar.getBoundingClientRect(), r = on.getBoundingClientRect(); if (r.left < bl.left || r.right > bl.right) bar.scrollLeft += (r.left + r.width/2) - (bl.left + bl.width/2); }
+}
+document.addEventListener('click', e => {
+  const tb = e.target.closest('[data-wktab]'); if (tb){ wkTab = tb.dataset.wktab; renderWeekPage(); return; }
+  const st = e.target.closest('[data-wkstep]'); if (st){ wkView = Math.min(42, Math.max(1, wkView + +st.dataset.wkstep)); renderWeekPage(); window.scrollTo(0,0); return; }
+  const op = e.target.closest('[data-wopen]'); if (op){ openWeek(selWeek || preg().week, op.dataset.wopen); return; }
+  if (e.target.closest('#jRing')){ openWeek(selWeek || preg().week, 'baby'); }
+});
+document.addEventListener('change', e => {
+  const k = e.target.dataset && e.target.dataset.wtodo; if (!k) return;
+  S.wtodo = S.wtodo || {}; if (e.target.checked) S.wtodo[k] = 1; else delete S.wtodo[k]; save();
 });
 /* ---------- Pregnancy details grid ---------- */
 const ORD = EN ? ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th'] : ['الأول','التاني','التالت','الرابع','الخامس','السادس','السابع','التامن','التاسع'];
